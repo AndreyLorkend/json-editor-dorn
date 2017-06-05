@@ -15,6 +15,7 @@
 
      <script src="dbedit/js/lodash.js"></script>
      <script src="dbedit/js/arrayhash.js"></script>
+     <script src="dbedit/js/predbedit.js"></script>
      <script src="dbedit/js/filesaver.js"></script>
      <!-- iframe.js necessary for setting the iframe ACE content -->
      <script src="dbedit/js/iframe.js"></script>
@@ -62,7 +63,7 @@
   <body  style="margin:20px">
     <div style="text-align: center">
       <h1>
-        JSON2Schema Generator
+        <a href="https://www.github.com/niebert/json-editor" target="_blank">JSON2Schema Generator</a>
       </h1>
       <h4>
         Support Tool for <a href="https://github.com/jdorn/json-editor" target="_blank">JSON Editor</a> developed by Jeremy Dorn
@@ -109,8 +110,9 @@
     <div id="iJSONinput" style="text-align: center">
       <iframe src="ace/ace.html?domid=jsoninput&mode=json" id="iACEinput" width="90%" height="150px"></iframe>
     </div>
-    <p id="pConverter" onclick="onClickSchema4JSON('iACEinput','iACEoutput')">
-      <button id='bCreateSchema'>Create JSON Schema</button>
+    <p id="pConverter">
+      <button id='bCreateSchema' onclick="onClickSchema4JSON('iACEinput','iACEoutput')">Create JSON Schema</button>
+      <button id='bExportJSON' onclick="saveFile2HDD('myjson.json',getEditorValue('iACEinput'))">Export JSON</button>
     </p>
     <div id="pSchemaOutput" style="display:none">
       <h3>JSON Schema</h3>
@@ -121,15 +123,15 @@
       </div>
       <p id="pCreateEditorJSON" onclick="createEditorJSON()">
         <button id='bCreateSchema'>Create JSON Editor</button>
+        <button id='bExportJSON' onclick="saveFile2HDD('schema4myjson.json',getEditorValue('iACEoutput'))">Export Schema</button>
       </p>
     </div>
     <div id="divEditor" style="display:none">
       <div id='editor_holder' style="margin-right: 30px; margin-left: 30px"></div>
       <div id='button_holder' style="margin:20px">
         <button id='export'>Export JSON</button>
-        <button id='bExportSchema'>Export JSON Schema</button>
-        <button id='bWinClose' onclick="window.close()">Close</button>
-        <button id='bExportEditorContent'>Export Editor innerHTML - Debug</button>
+        <button id='bExportSchema' onclick="saveFile2HDD('schema4myjson.json',getEditorValue('iACEoutput'))">Export JSON Schema</button>
+        <button id='bExportEditorContent'>Export Editor innerHTML</button>
         <button id='view' onclick="console.log(JSON.stringify(editor.getValue()))" style="display:none">View (console.log)</button>
       </div>
     </div>
@@ -195,15 +197,7 @@
           document.getElementById('export').addEventListener('click',function() {
             var vContent = JSON.stringify(editor.getValue(),null,4);
             // Get the value from the editor
-            saveFile2HDD(vSchemaID+".json",vContent);
-            //console.log(editor.getValue());
-          });
-          //-------------------------------------------------------
-          // EXPORT JSON SCHEMA: Hook up the submit button to download JSON Schema
-          document.getElementById('export').addEventListener('click',function() {
-            var vContent = JSON.stringify(editor.schema,null,4);
-            // Get the value from the editor
-            saveFile2HDD(vSchemaID+"_schemas.json",vContent);
+            saveFile2HDD("myjson.json",vContent);
             //console.log(editor.getValue());
           });
           //-------------------------------------------------------
@@ -217,5 +211,14 @@
         };
       }
     </script>
+    <hr>
+    <center>
+      <font size="-1">
+        JSON2Schema written by Engelbert Niehaus 2017<br>
+        <a href="https://www.github.com/niebert/json-editor" target="_blank">GitHub Repository with JSON2Schema Example</a>
+        <br> based on JSON Editor of Jeremy Dorn
+      </font>
+    </center>
+  
   </body>
 </html>
