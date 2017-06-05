@@ -2,17 +2,19 @@ JSON Editor with JSON2Schema Generator
 ===========
 
 ### JSON2Schema Generator
-The JSON to Schema generator is stored in ___docs/___ directory of this repository, so that it is available as online service for testing the HTML file [json2schema.html][https://niebert.github.io/json-editor/doc4json2schema.html]. JSON2Schema uses the [Editor ACE](https://ace.c9.io/) for the JSON file and JSON Schema.
+The JSON to Schema generator is stored in ___docs/___ directory of this repository, so that it is available as online service for testing the HTML file [json2schema.html](https://niebert.github.io/json-editor/doc4json2schema.html). JSON2Schema uses the [Editor ACE](https://ace.c9.io/) for the JSON file and JSON Schema.
 
 ### Changes in Fork:
-* incorporated the ___hidden.js___ to hide certain values in the JSON tree of the editor
+* incorporated the ___hidden.js___ in JSON editor to hide certain values in the JSON tree of the editor, this [fork of json-editor by Mehmet Baker](https://github.com/mehmetb/json-editor) is currently pull request to original repository maintained by Jeremy Dorn.
+)
 * added a ___/docs___ created a direct link to ___json2schema.html___. This helps users of the JSON editor to create a JSON schema, that defines the structure of desired JSON file.
 * the JSON2Schema converter can be populated remotely with a HTML form (see [doc4json2schema.html](https://niebert.github.io/json-editor/doc4json2schema.html))
 * added a reference to this tool in JSON-Editor Wiki of Jeremy Dorn
 
 ### Resources for the Fork
 * ___json2schema.html___ was inspired by [https://www.jsonschema.net](https://www.jsonschema.net/#/editor) to generate a schema from a given JSON.
-* [json-editor](https://github.com/jdorn/json-editor) by Jeremy Dorn
+* [json-editor](https://github.com/jdorn/json-editor) by Jeremy Dorn,
+* [json-editor](https://github.com/mehmetb/json-editor) for hidden element support in the JSON Editor by Mehmet Baker,
 
 
 ![JSON Schema -> HTML Editor -> JSON](https://raw.github.com/jdorn/json-editor/master/jsoneditor.png)
