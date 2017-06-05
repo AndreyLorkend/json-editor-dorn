@@ -3,18 +3,41 @@
   <head>
     <meta charset="utf-8" />
     <title>JSON2Schema Editor</title>
+     <!-- JQuery JS and CSS -->
+    <link href="plugins/jquery/jquery-ui.css" rel="stylesheet">
+    <!-- Bootstrap Core CSS -->
+     <link href="plugins/dbedit/css/bootstrap.min.css" rel="stylesheet">
+     <!-- Font-Awesome CSS -->
+     <link href="plugins/dbedit/css/font-awesome.min.css" rel="stylesheet">
+
   </head>
-  <body>
+  <body style="margin:20px">
   	<h1>
-  		JSON to Schema Editor
+  		<a href="index.html">JSON Editor Examples - Font-AweSome and ACE</a>
   	</h1> 
+  	<h2>
+  		JSON to Schema Editor
+  	</h2> 
   	
   	 <p>These examples use the <a href="https://github.com/jdorn/json-editor" target="_blank">JSON Editor</a> of Jeremy Dorn to create a JSON Schema. Furthermore <a href="https://github.com/FortAwesome/Font-Awesome" target="_blank">Font-AweSome</a> and the <a href="https://ace.c9.io/#nav=embedding" target="_blank">ACE-Editor</a> are integrated in the examples for offline use of the JSON-Editor. 
   	 The very helpful examples provided by Jeremy Dorn must be altered, so that CSS layout and required libraries are available on the local device for offline application of the JSON Editor. 
   	 </p>
   	 <p>The current examples can be found in <tt>docs/</tt>-folder of the git repository <a href="https://github.com/niebert/json-editor" target="_blank">json-editor</a> (fork Jeremy Dorns JSON Editor>. The examples demonstrate the following:</p>
     <ul>
-      <li><a href="basic_ref.html">basic_ref.html</a> example show the use of external schemas via ajax (using $ref)</li>
+      <li>You can edit a raw JSON in the textarea and submit the JSON to <a href="plugins/json2schema.html" target="_blank">json2schema.html</a>
+      	<br>
+      	<form action="plugins/json2schema.html" method="get" target="_blank">
+      		<textarea name="jsoninput" rows="5" cols="85">
+{
+	"name":"John Miller",
+	"color":"#3412AB",
+	"age": 35,
+	"male": true
+}
+      		</textarea>
+      		<input type="submit">
+      	</form>
+      </li>
       <li><a href="doc4json2schema.html">json2schema.html</a> example provides an example, how you can create a JSON schema from a given JSON file. A JSON Schema is needed to feed the JSON editor with the structure of the desired JSON output delivered by Jeremy Dorns JSON-Editor.</li>
 
     </ul>
