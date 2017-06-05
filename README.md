@@ -9,12 +9,12 @@ The JSON to Schema generator is stored in ___docs/___ directory of this reposito
 )
 * added a ___/docs___ created a direct link to ___json2schema.html___. This helps users of the JSON editor to create a JSON schema, that defines the structure of desired JSON file.
 * the JSON2Schema converter can be populated remotely with a HTML form (see [doc4json2schema.html](https://niebert.github.io/json-editor/doc4json2schema.html))
-* added a reference to this tool in JSON-Editor Wiki of Jeremy Dorn
+* added a reference to this tool in [JSON-Editor Wiki](https://github.com/jdorn/json-editor/wiki/JSON2Schema) of Jeremy Dorn
 
 ### Resources for the Fork
 * ___json2schema.html___ was inspired by [https://www.jsonschema.net](https://www.jsonschema.net/#/editor) to generate a schema from a given JSON.
 * [json-editor](https://github.com/jdorn/json-editor) by Jeremy Dorn,
-* [json-editor](https://github.com/mehmetb/json-editor) for hidden element support in the JSON Editor by Mehmet Baker,
+* [json-editor](https://github.com/mehmetb/json-editor) for hidden element support in the JSON Editor by Mehmet Baker (see [alteration by Mehmet Baker](https://github.com/jdorn/json-editor/pull/749/files)),
 
 
 ![JSON Schema -> HTML Editor -> JSON](https://raw.github.com/jdorn/json-editor/master/jsoneditor.png)
