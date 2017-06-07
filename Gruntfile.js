@@ -129,6 +129,12 @@ module.exports = function(grunt) {
         files: {
           src: ['dist/jsoneditor.js']
         }
+      },
+      copyfiles: {
+      	files: [
+ 		 { src: 'dist/jsoneditor.js' dest: 'docs/plugins/dbedit/js' },
+  		 { src: 'dist/jsoneditor.min.js' dest: 'docs/plugins/dbedit/js' }
+		]
       }
     }
   });
@@ -140,6 +146,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
 
   // Default task.
-  grunt.registerTask('default', ['jshint:beforeconcat','concat','jshint:afterconcat','uglify']);
+  grunt.registerTask('default', ['jshint:beforeconcat','concat','jshint:afterconcat','uglify','copyfiles']);
 
 };

@@ -50,15 +50,9 @@
      };
 
     </script>
-    <!-- BEGIN: load JSON schema -->
-    <script src="dbedit/schema/car.schema"></script>
-    <script src="dbedit/schema/class.schema"></script>
-    <script src="dbedit/schema/classlist.schema"></script>
-    <script src="dbedit/schema/globallibs.schema"></script>
-    <script src="dbedit/schema/elementdb.schema"></script>
-    <script src="dbedit/schema/databaseschema.schema"></script>
-    <script src="dbedit/schema/basicclasses.schema"></script>
-    <!-- END:  load JSON schema -->
+    <!-- BEGIN: load JSON template -->
+    <script src="dbedit/tpl/jsoneditor_tpl.js"></script>
+    <!-- END:  load JSON template -->
   </head>
   <body  style="margin:20px">
     <div style="text-align: center">
@@ -124,6 +118,7 @@
       <div id='button_holder' style="margin:20px">
         <button id='export'>Export JSON</button>
         <button id='bExportSchema' onclick="saveFile2HDD('schema4myjson.json',getEditorValue('iACEoutput'));return false">Export JSON Schema</button>
+        <button id='bExportEditor' onclick="alert('Save Editor to folder /dbedit/jsoneditor.html');exportEditorHTML();return false">Export JSON Editor</button>
         <button id='bCloseWindow' onclick="syncRemoteSchema();window.close()" style="display:none">Close</button>
         <button id='bExportEditorContent'>Export Editor innerHTML</button>
         <button id='view' onclick="console.log(JSON.stringify(editor.getValue()))" style="display:none">View (console.log)</button>
