@@ -23,7 +23,13 @@ function getSchema4JSON(pJSON) {
     "definitions": {}
   };
   var vTypeTree = getTypeTree4JSON(pJSON);
-  convertJSON2Schema(pJSON,vPath,vSchema,vTypeTree);
+  // vEditorPath is the path to a specific JSON element in the JSON file
+  // "root" is the root node of the JSON. "root.name" is addressing the name
+  // { "name":"Peter Miller"}. Deeper subelements of the EditorPath will be defined
+  // in  a recursive way.
+  var vEditorPath = "root";
+  // path is keeping track of the JSON schema
+  convertJSON2Schema(pJSON,vPath,vSchema,vTypeTree,vEditorPath);
   //return vTypeTree;
   return vSchema;
 };
@@ -72,7 +78,16 @@ function createTypeTree4JSON(pJSON,pTypeTree) {
   };
 };
 
-function convertJSON2Schema(pJSON,pPath,pSchema,pTypeTree) {
+function getID4Path(pPath) {
+  var vID = pPath;
+  var vSlashPos = vID.lastIndexOf("/")
+  if (vSlashPos>0) {
+    vID = pPath.substring(vSlashPos+1);
+  };
+  return vID;
+}
+
+function convertJSON2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath) {
   // pTypeTree is need for checking deep equal for "oneOf" definition in arrays
   var vType = getType4JSON(pJSON);
   //---set Type and ID---
@@ -88,47 +103,47 @@ function convertJSON2Schema(pJSON,pPath,pSchema,pTypeTree) {
   switch (vType) {
     //---- OBJECT/HASH -------
     case "object":
-      convertObject2Schema(pJSON,pPath,pSchema,pTypeTree);
+      convertObject2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath);
     break;
     //---- ARRAY -------------
     case "array":
       pSchema["format"] = "tabs";
-      convertArray2Schema(pJSON,pPath,pSchema,pTypeTree);
+      convertArray2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath);
     break;
     //---- STRING ------------
     case "string":
-      pSchema["title"] = "Title of "+vType+" Var";
+      pSchema["title"] = "Title of '"+pEditorPath+"' Type: '"+vType+"'";
       pSchema["default"] = pJSON; //"Default text of "+vType+" variable";
       pSchema["format"] = determineFormat4String(pJSON);
-      pSchema["description"] = "An explanation about the purpose of "+vType+" instance.";
+      pSchema["description"] = "An explanation for '"+pEditorPath+"' about the purpose of "+vType+" instance with editor path '"+pEditorPath+"'.";
     break;
     //---- NUMBER ------------
     case "number":
-      pSchema["title"] = "Title of "+vType+" Var";
+      pSchema["title"] = "Title of '"+pEditorPath+"' Type: '"+vType+"'";
       pSchema["default"] = pJSON;
-      pSchema["description"] = "An explanation about the purpose of "+vType+" instance.";
+      pSchema["description"] = "An explanation for '"+getID4Path(pPath)+"' about the purpose of "+vType+" instance with editor path '"+pEditorPath+"'.";
     break;
     //---- INTEGER ------------
     case "integer":
-      pSchema["title"] = "Title of "+vType+" Var";
+      pSchema["title"] = "Title of '"+pEditorPath+"' Type: '"+vType+"'";
       pSchema["default"] = pJSON;
-      pSchema["description"] = "An explanation about the purpose of "+vType+" instance.";
+      pSchema["description"] = "An explanation for '"+getID4Path(pPath)+"' about the purpose of "+vType+" instance with editor path '"+pEditorPath+"'.";
     break;
     //---- BOOLEAN ------------
     case "boolean":
-      pSchema["title"] = "Title of "+vType+" Var";
+      pSchema["title"] = "Title of '"+pEditorPath+"' Type: '"+vType+"'";
       pSchema["format"] = "checkbox";
       pSchema["default"] = pJSON;
-      pSchema["description"] = "An explanation about the purpose of "+vType+" instance.";
+      pSchema["description"] = "An explanation for '"+getID4Path(pPath)+"' about the purpose of "+vType+" instance with editor path '"+pEditorPath+"'.";
     break;
     default:
-      pSchema["title"] = "Title of Variable without Type";
+      pSchema["title"] = "Title of '"+pEditorPath+"' Type: '"+vType+"'";
       pSchema["default"] = null;
-      pSchema["description"] = "An explanation about the purpose of "+vType+" instance.";
+      pSchema["description"] = "An explanation for '"+getID4Path(pPath)+"' about the purpose of "+vType+" instance with editor path '"+pEditorPath+"'.";
   };
 };
 
-function convertObject2Schema(pJSON,pPath,pSchema,pTypeTree) {
+function convertObject2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath) {
   // the array of all required keys in the hash/object
   pSchema["defaultProperties"] = [];
   // properties contains one schema for every key
@@ -140,12 +155,12 @@ function convertObject2Schema(pJSON,pPath,pSchema,pTypeTree) {
       // create the hash for all properties
       pSchema["properties"][key] = {};
       // now call convertJSON2Schema() on sub-structure of JSON
-      convertJSON2Schema(pJSON[key],pPath+"/properties/"+key,pSchema["properties"][key],pTypeTree[key]);
+      convertJSON2Schema(pJSON[key],pPath+"/properties/"+key,pSchema["properties"][key],pTypeTree[key],pEditorPath+"."+key);
     };
   };
 };
 
-function convertArray2Schema(pJSON,pPath,pSchema,pTypeTree) {
+function convertArray2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath) {
   var vID = "";
   pSchema["items"] = {};
   var vItems = [];
@@ -154,7 +169,7 @@ function convertArray2Schema(pJSON,pPath,pSchema,pTypeTree) {
     // vSubTypeTree contains the TypeTree for the JSON sub structure of pJSON[i]
     // vHash4ID contains the schema for the JSON sub structure of pJSON[i]
     var vHash4ID = {};
-    convertJSON2Schema(pJSON[i],pPath+"/items",vHash4ID,pTypeTree[i]);
+    convertJSON2Schema(pJSON[i],pPath+"/items",vHash4ID,pTypeTree[i],pEditorPath+".*");
     // check if previous elements of array are deep equal
     var vDeepEqual = false;
     console.log("Compare JSON1:\n"+JSON.stringify(pTypeTree[i],null,4));
@@ -185,6 +200,7 @@ function convertArray2Schema(pJSON,pPath,pSchema,pTypeTree) {
 
 function determineFormat4String(pString) {
   var vColorRegEx = new RegExp("^#[0-9a-fA-F]{6}$");
+  var vGeolocRegEx = new RegExp("^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$");
   if (vColorRegEx.test(pString) == true) {
     return "color"
   } else if (pString.indexOf("\n") >= 0) {

@@ -66,7 +66,7 @@
         <a href="https://www.github.com/niebert/json-editor" target="_blank">JSON2Schema Generator</a>
       </h1>
       <h4>
-        Support Tool for <a href="https://github.com/jdorn/json-editor" target="_blank">JSON Editor</a> developed by Jeremy Dorn
+        JSON Schema Support Tool for <a href="https://github.com/jdorn/json-editor" target="_blank">JSON Editor</a> developed by Jeremy Dorn
       </h4>
     </div>
     <hr>
@@ -74,24 +74,17 @@
     <textarea id="jsoninput" rows="5" cols="20" style="display:none">
 {
   "myid": 1,
-   "name": "A green door",
-   "price": 12.5,
-   "checked": false,
-   "color":"#12CA34",
-   "test": {
-     "var1": "test",
-     "var2": {
-       "var3": "dte",
-       "var4": 4.5
-     }
+   "book": "A green door",
+   "authors": [
+     "Mary Myers",
+     "Bert Bond"
+   ],
+   "prices": {
+   	   "buy": 12.5,
+   	   "sell": 16.5
    },
-   "tags": [
-     "home",
-     [
-       "green",
-       "yellow"
-     ]
-   ]
+   "checked": false,
+   "color":"#12CA34"
 }
     </textarea>
     <script>
@@ -130,7 +123,8 @@
       <div id='editor_holder' style="margin-right: 30px; margin-left: 30px"></div>
       <div id='button_holder' style="margin:20px">
         <button id='export'>Export JSON</button>
-        <button id='bExportSchema' onclick="saveFile2HDD('schema4myjson.json',getEditorValue('iACEoutput'))">Export JSON Schema</button>
+        <button id='bExportSchema' onclick="saveFile2HDD('schema4myjson.json',getEditorValue('iACEoutput'));return false">Export JSON Schema</button>
+        <button id='bCloseWindow' onclick="syncRemoteSchema();window.close()" style="display:none">Close</button>
         <button id='bExportEditorContent'>Export Editor innerHTML</button>
         <button id='view' onclick="console.log(JSON.stringify(editor.getValue()))" style="display:none">View (console.log)</button>
       </div>
@@ -219,6 +213,6 @@
         <br> based on JSON Editor of Jeremy Dorn
       </font>
     </center>
-  
+
   </body>
 </html>
