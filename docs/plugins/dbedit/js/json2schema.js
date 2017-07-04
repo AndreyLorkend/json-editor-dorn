@@ -163,6 +163,7 @@ function convertObject2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath) {
 function convertArray2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath) {
   var vID = "";
   pSchema["items"] = {};
+  pSchema["items"]["headerTemplate"] = "{{i1}}";
   var vItems = [];
   var vDefaults = [];
   for (var i = 0; i < pJSON.length; i++) {
