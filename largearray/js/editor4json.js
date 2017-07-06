@@ -1,12 +1,12 @@
 //#################################################################
 //# Javascript Class: Editor4JSON()
-//#       SuperClass: 
+//#       SuperClass:
 //#   Class Filename: editor4json.js
 //#
 //# Author of Class:      Engelbert Niehaus
 //# email:                niehaus@uni-landau.de
 //# created               15.6.2017
-//# last modifications    2017/06/02 4:56:59
+//# last modifications    2017/06/02 20:56:06
 //# GNU Public License V3 - OpenSource
 //#
 //# created with JavaScript Class Creator JSCC
@@ -52,6 +52,8 @@ function Editor4JSON () {
     //---------------------------------------------------------------------
 	//---PUBLIC: aEditor (JSONEditor): is the instance of the JSON editor developed by Jeremy Dorn
 	this.aEditor = null;
+	//---PUBLIC: aName (String): the attribute 'aName' stores the base name of the JSON file. it used for base name for export files.
+	this.aName = "myjson";
 	//---PUBLIC: aData (Array): the attribute 'aData' is a array of JSON records that are edited with the JSON editor by Jeremy Dorn
 	this.aData = [];
 	//---PUBLIC: current ( ): the attribute 'current' stores the current selected index in the array, -1 means no JSON record selected in array or array is empty
@@ -60,65 +62,85 @@ function Editor4JSON () {
 	this.aSchemaJSON = null;
 	//---PUBLIC: aEditURL (String): the attribute 'aEditURL' stores the URL to the JSON Editor developed by Jeremy Dorn
 	this.aEditURL = "";
-	
+	//---PUBLIC: aDOMID (Hash): the attribute 'aDOMID' stores in ids of DOM element, e.g. editor_holder, valid ...
+	this.aDOMID = null;
+
     //---------------------------------------------------------------------
     //---Methods of Class "Editor4JSON()"
     //---------------------------------------------------------------------
-	//----PUBLIC Method: Editor4JSON.init(pDOMID:String,pData:Array,pSchema:Hash)-----
-	// init(pDOMID,pData,pSchema)  
-	//	pDOMID is the DOM id defines the DOM element where the JSON editor is injected (editor_holder of JSON editor). 
-	//	pData is the large array that is edited and 
+	//----PUBLIC Method: Editor4JSON.init(pID4DOM:Hash,pData:Array,pSchema:Hash)-----
+	// init(pID4DOM,pData,pSchema)
+	//	pDOMID is hash with DOM ids that define the DOM element where the JSON editor is injected (editor_holder of JSON editor).
+	//	pData is the large array that is edited and
 	//	pSchema defines the JSON schema of a single record in the large thisarray
 	//----PUBLIC Method: Editor4JSON.prev()-----
-	// prev()  
+	// prev()
 	//	goto previous record
 	//----PUBLIC Method: Editor4JSON.next()-----
-	// next()  
+	// next()
 	//	Goto next record
-	//----PUBLIC Method: Editor4JSON.goto()-----
-	// goto()  
+	//----PUBLIC Method: Editor4JSON.goto(i)-----
+	// goto()
 	//	goto record with index i
 	//----PUBLIC Method: Editor4JSON.first()-----
-	// first()  
+	// first()
 	//	shows the first element in the large record
 	//----PUBLIC Method: Editor4JSON.last()-----
-	// last()  
+	// last()
 	//	goes to the last record in large array
 	//----PUBLIC Method: Editor4JSON.edit()-----
-	// edit()  
-	//	edit calls the JSON editor of Jeremy Dorn for the selected record. It sets the init value of the JSON editor.  
+	// edit()
+	//	edit calls the JSON editor of Jeremy Dorn for the selected record. It sets the init value of the JSON editor.
 	//----PUBLIC Method: Editor4JSON.setSchema(pSchemaJSON:Hash)-----
-	// setSchema(pSchemaJSON)  
-	//	Comment for setSchema
+	// setSchema(pSchemaJSON)
+	//	setSchema() sets a new schema for the JSON editor and the records of the array. If the editor this.aEditor exists, setSchema will destroy the current JSON editor to free some resources otherwise it will call the init method again.
 	//----PUBLIC Method: Editor4JSON.getSchema():Hash-----
 	// getSchema()  Return: Hash
 	//	getSchema() just return the JSON schema this.aSchemaJSON
-	//----PUBLIC Method: Editor4JSON.export(pFile:String,pJSON:Object)-----
-	// export(pFile,pJSON)  
+	//----PUBLIC Method: Editor4JSON.export()-----
+	// export()
 	//	export() uses the FileSaver.js to create a download of exported JSON pJSON after the JSON was stringified
 	//----PUBLIC Method: Editor4JSON.exportData()-----
-	// exportData()  
+	// exportData()
 	//	exportData() exports the JSON data in this.aData as file. The filename is defined by this.aName. if aName="myjson" the filename is "myjson.json"
 	//----PUBLIC Method: Editor4JSON.exportSchema()-----
-	// exportSchema()  
+	// exportSchema()
 	//	exportSchema() exports the JSON schema in this.aSchemaJSON as file. The filename is defined by this.aName. if aName="myjson" the filename is "myjson_schema.json"
 	//----PUBLIC Method: Editor4JSON.getLocalStorageID4Name(pName:String):String-----
 	// getLocalStorageID4Name(pName)  Return: String
 	//	the LocalStorageID for an item may not contain a dot . Name
 	//----PUBLIC Method: Editor4JSON.loadLS()-----
-	// loadLS()  
+	// loadLS()
 	//	loadLS() loads the JSON file from Local Storage
 	//----PUBLIC Method: Editor4JSON.saveLS()-----
-	// saveLS()  
+	// saveLS()
 	//	saveLS() stores the JSON file in Local Storage
 	//----PUBLIC Method: Editor4JSON.validate():Boolean-----
 	// validate()  Return: Boolean
-	//	validates the current record in the large array against the schema. 
+	//	validates the current record in the large array against the schema.
 	//	Returns true if record in JSON editor valid according to the JSON schema in this.aSchemaJSON
 	//----PUBLIC Method: Editor4JSON.onChange()-----
-	// onChange()  
-	//	handle onChange event from the JSON editor developed by Jeremy Dorn. This method updates the content in the editor with the record in this.aData[this.current] 
-	
+	// onChange()
+	//	handle onChange event from the JSON editor developed by Jeremy Dorn. This method updates the content in the editor with the record in this.aData[this.current]
+	//----PUBLIC Method: Editor4JSON.deleteRecord()-----
+	// deleteRecord()
+	//	delete current record in array and decrease current if is the last
+	//----PUBLIC Method: Editor4JSON.deleteAsk()-----
+	// deleteAsk()
+	//	deleteAsk() asks the user if deleteRecord() should be performed
+	//----PUBLIC Method: Editor4JSON.check()-----
+	// check()
+	//	checks if the index of the array is between 0 and this.aData.lenth
+	//----PUBLIC Method: Editor4JSON.updateDOM()-----
+	// updateDOM()
+	//	updateDOM() updates the index of the currently edited record from the array and updates the length of the array e.g. if a new record was pushed the array this.aData
+	//----PUBLIC Method: Editor4JSON.setEditorData(pEditorData:Hash)-----
+	// setEditorData(pEditorData)
+	//	setEditorData() sets the Editor with current, data and schema
+	//----PUBLIC Method: Editor4JSON.getEditorData():Hash-----
+	// getEditorData()  Return: Hash
+	//	getEditorData() create a Hash for this.current, this.aData and this.aSchema
+
 
 
 }
@@ -131,58 +153,64 @@ function Editor4JSON () {
 //# PUBLIC Method: init()
 //#    used in Class: Editor4JSON
 //# Parameter:
-//#    pDOMID:String
+//#    pID4DOM:Hash
 //#    pData:Array
 //#    pSchema:Hash
 //# Comment:
-//#    pDOMID is the DOM id defines the DOM element where the JSON editor is injected (editor_holder of JSON editor). 
-//#    pData is the large array that is edited and 
+//#    pDOMID is hash with DOM ids that define the DOM element where the JSON editor is injected (editor_holder of JSON editor).
+//#    pData is the large array that is edited and
 //#    pSchema defines the JSON schema of a single record in the large thisarray
-//# 
+//#
 //# created with JSCC  2017/03/05 18:13:28
-//# last modifications 2017/06/02 4:56:59
+//# last modifications 2017/06/02 20:56:06
 //#################################################################
 
 Editor4JSON.prototype.init = function (pDOMID,pData,pSchema) {
   //----Debugging------------------------------------------
-  // console.log("js/editor4json.js - Call: init(pDOMID:String,pData:Array,pSchema:Hash)");
-  // alert("js/editor4json.js - Call: init(pDOMID:String,pData:Array,pSchema:Hash)");
+  // console.log("js/editor4json.js - Call: init(pID4DOM:Hash,pData:Array,pSchema:Hash)");
+  // alert("js/editor4json.js - Call: init(pID4DOM:Hash,pData:Array,pSchema:Hash)");
   //----Create Object/Instance of Editor4JSON----
   //    var vMyInstance = new Editor4JSON();
-  //    vMyInstance.init(pDOMID,pData,pSchema);
+  //    vMyInstance.init(pID4DOM,pData,pSchema);
   //-------------------------------------------------------
 
   this.aSchema = pSchema;
-  this.aData = pData
+  this.aData = pData;
+  this.loadLS(); // load aData from local storage if that exists
+  this.aDOMID = pDOMID;
+  this.aName = pDOMID["name"] || "myjson";
   this.aEditorConfig = {
           // Enable fetching schemas via ajax
           ajax: true,
-          
+
           // The schema for the editor
           schema: pSchema,
-          
-         
+
+
           // Disable additional properties
           no_additional_properties: true,
-          
+
           // Require all properties by default
           required_by_default: true
         };
   // Seed the form with a starting value for the Editor if pData contains at least one record
    if (pData.length > 0) {
-      this.aEditorConfig.startval = pData[0]
+      this.aEditorConfig.startval = pData[0];
   };
   // create the editor
-  this.aEditor = new JSONEditor(document.getElementById(pDOMID),this.aEditorConfig);
-  
-  // Hook up the validation indicator to update its 
+  var vEditorDOM = document.getElementById(this.aDOMID["editor"]);
+  if (vEditorDOM) {
+      this.aEditor = new JSONEditor(vEditorDOM,this.aEditorConfig);
+  } else {
+      console.log("ERROR: Editor DOM with ID=‘"+this.aDOMID["editor"]+"' does not exist!")
+  }
+
+  // Hook up the validation indicator to update its
   // status whenever the editor changes
   this.aEditor.on('change',function() {
           // upadte the currect record in large array
-          vApp.aEditor4JSON.onChange()
+          vEditor4JSON.onChange()
         });
-  
-  
 
 };
 //----End of Method init Definition
@@ -192,12 +220,12 @@ Editor4JSON.prototype.init = function (pDOMID,pData,pSchema) {
 //# PUBLIC Method: prev()
 //#    used in Class: Editor4JSON
 //# Parameter:
-//#    
+//#
 //# Comment:
 //#    goto previous record
-//# 
+//#
 //# created with JSCC  2017/03/05 18:13:28
-//# last modifications 2017/06/02 4:56:59
+//# last modifications 2017/06/02 20:56:06
 //#################################################################
 
 Editor4JSON.prototype.prev = function () {
@@ -212,6 +240,7 @@ Editor4JSON.prototype.prev = function () {
   if (this.current > 0) {
       this.current--;
   };
+  console.log("Prev Click ["+this.current+"]");
   this.edit();
 
 };
@@ -222,12 +251,12 @@ Editor4JSON.prototype.prev = function () {
 //# PUBLIC Method: next()
 //#    used in Class: Editor4JSON
 //# Parameter:
-//#    
+//#
 //# Comment:
 //#    Goto next record
-//# 
+//#
 //# created with JSCC  2017/03/05 18:13:28
-//# last modifications 2017/06/02 4:56:59
+//# last modifications 2017/06/02 20:56:06
 //#################################################################
 
 Editor4JSON.prototype.next = function () {
@@ -239,9 +268,10 @@ Editor4JSON.prototype.next = function () {
   //    vMyInstance.next();
   //-------------------------------------------------------
 
-  if (this.current < (this.data.length-1)) {
+  if (this.current < (this.aData.length-1)) {
       this.current++;
   };
+  console.log("Next Click ["+this.current+"]");
   this.edit();
 
 };
@@ -252,18 +282,18 @@ Editor4JSON.prototype.next = function () {
 //# PUBLIC Method: goto()
 //#    used in Class: Editor4JSON
 //# Parameter:
-//#    
+//#    i
 //# Comment:
 //#    goto record with index i
-//# 
+//#
 //# created with JSCC  2017/03/05 18:13:28
-//# last modifications 2017/06/02 4:56:59
+//# last modifications 2017/06/02 20:56:06
 //#################################################################
 
 Editor4JSON.prototype.goto = function () {
   //----Debugging------------------------------------------
-  // console.log("js/editor4json.js - Call: goto()");
-  // alert("js/editor4json.js - Call: goto()");
+  // console.log("js/editor4json.js - Call: goto(i)");
+  // alert("js/editor4json.js - Call: goto(i)");
   //----Create Object/Instance of Editor4JSON----
   //    var vMyInstance = new Editor4JSON();
   //    vMyInstance.goto();
@@ -276,6 +306,7 @@ Editor4JSON.prototype.goto = function () {
   } else {
       this.current = -1;
   };
+  console.log("Goto ["+this.current+"]");
   this.edit();
 
 };
@@ -286,12 +317,12 @@ Editor4JSON.prototype.goto = function () {
 //# PUBLIC Method: first()
 //#    used in Class: Editor4JSON
 //# Parameter:
-//#    
+//#
 //# Comment:
 //#    shows the first element in the large record
-//# 
+//#
 //# created with JSCC  2017/03/05 18:13:28
-//# last modifications 2017/06/02 4:56:59
+//# last modifications 2017/06/02 20:56:06
 //#################################################################
 
 Editor4JSON.prototype.first = function () {
@@ -304,7 +335,8 @@ Editor4JSON.prototype.first = function () {
   //-------------------------------------------------------
 
   this.current = 0;
-  this.edit()
+  console.log("First Click ["+this.current+"]");
+  this.edit();
 
 };
 //----End of Method first Definition
@@ -314,12 +346,12 @@ Editor4JSON.prototype.first = function () {
 //# PUBLIC Method: last()
 //#    used in Class: Editor4JSON
 //# Parameter:
-//#    
+//#
 //# Comment:
 //#    goes to the last record in large array
-//# 
+//#
 //# created with JSCC  2017/03/05 18:13:28
-//# last modifications 2017/06/02 4:56:59
+//# last modifications 2017/06/02 20:56:06
 //#################################################################
 
 Editor4JSON.prototype.last = function () {
@@ -332,6 +364,7 @@ Editor4JSON.prototype.last = function () {
   //-------------------------------------------------------
 
   this.current = this.aData.length - 1;
+  console.log("Last Click ["+this.current+"]");
   this.edit();
 
 };
@@ -342,12 +375,12 @@ Editor4JSON.prototype.last = function () {
 //# PUBLIC Method: edit()
 //#    used in Class: Editor4JSON
 //# Parameter:
-//#    
+//#
 //# Comment:
-//#    edit calls the JSON editor of Jeremy Dorn for the selected record. It sets the init value of the JSON editor.  
-//# 
+//#    edit calls the JSON editor of Jeremy Dorn for the selected record. It sets the init value of the JSON editor.
+//#
 //# created with JSCC  2017/03/05 18:13:28
-//# last modifications 2017/06/02 4:56:59
+//# last modifications 2017/06/02 20:56:06
 //#################################################################
 
 Editor4JSON.prototype.edit = function () {
@@ -359,6 +392,7 @@ Editor4JSON.prototype.edit = function () {
   //    vMyInstance.edit();
   //-------------------------------------------------------
 
+  // edit creates at least one record in the array this.aData
   if (this.aData.length == 0) {
       // push an empty JSON hash
       console.log("pData is empty create an empty element in the large array")
@@ -369,6 +403,7 @@ Editor4JSON.prototype.edit = function () {
       this.current = 0;
   };
   this.aEditor.setValue(this.aData[this.current]);
+  this.updateDOM();
 
 };
 //----End of Method edit Definition
@@ -380,10 +415,10 @@ Editor4JSON.prototype.edit = function () {
 //# Parameter:
 //#    pSchemaJSON:Hash
 //# Comment:
-//#    Comment for setSchema
-//# 
+//#    setSchema() sets a new schema for the JSON editor and the records of the array. If the editor this.aEditor exists, setSchema will destroy the current JSON editor to free some resources otherwise it will call the init method again.
+//#
 //# created with JSCC  2017/03/05 18:13:28
-//# last modifications 2017/06/02 4:56:59
+//# last modifications 2017/06/02 20:56:06
 //#################################################################
 
 Editor4JSON.prototype.setSchema = function (pSchemaJSON) {
@@ -395,7 +430,12 @@ Editor4JSON.prototype.setSchema = function (pSchemaJSON) {
   //    vMyInstance.setSchema(pSchemaJSON);
   //-------------------------------------------------------
 
-  //----------- INSERT YOUR CODE HERE ---------------
+  this.aSchemaJSON = pSchemaJSON;
+  if (this.aEditor) {
+      this.aEditor.destroy();
+      document.getElementById(this.aDOMID["editor"]).innerHTML = "";
+  };
+  this.init(this.aDOMID,this.aData,this.aSchemaJSON);
 
 };
 //----End of Method setSchema Definition
@@ -405,12 +445,12 @@ Editor4JSON.prototype.setSchema = function (pSchemaJSON) {
 //# PUBLIC Method: getSchema()
 //#    used in Class: Editor4JSON
 //# Parameter:
-//#    
+//#
 //# Comment:
 //#    getSchema() just return the JSON schema this.aSchemaJSON
 //# Return: Hash
 //# created with JSCC  2017/03/05 18:13:28
-//# last modifications 2017/06/02 4:56:59
+//# last modifications 2017/06/02 20:56:06
 //#################################################################
 
 Editor4JSON.prototype.getSchema = function () {
@@ -432,22 +472,21 @@ Editor4JSON.prototype.getSchema = function () {
 //# PUBLIC Method: export()
 //#    used in Class: Editor4JSON
 //# Parameter:
-//#    pFile:String
-//#    pJSON:Object
+//#
 //# Comment:
 //#    export() uses the FileSaver.js to create a download of exported JSON pJSON after the JSON was stringified
-//# 
+//#
 //# created with JSCC  2017/03/05 18:13:28
-//# last modifications 2017/06/02 4:56:59
+//# last modifications 2017/06/02 20:56:06
 //#################################################################
 
-Editor4JSON.prototype.export = function (pFile,pJSON) {
+Editor4JSON.prototype.export = function () {
   //----Debugging------------------------------------------
-  // console.log("js/editor4json.js - Call: export(pFile:String,pJSON:Object)");
-  // alert("js/editor4json.js - Call: export(pFile:String,pJSON:Object)");
+  // console.log("js/editor4json.js - Call: export()");
+  // alert("js/editor4json.js - Call: export()");
   //----Create Object/Instance of Editor4JSON----
   //    var vMyInstance = new Editor4JSON();
-  //    vMyInstance.export(pFile,pJSON);
+  //    vMyInstance.export();
   //-------------------------------------------------------
 
   var vStringJSON = JSON.stringify(pJSON,null,4);
@@ -455,7 +494,7 @@ Editor4JSON.prototype.export = function (pFile,pJSON) {
   var file = new File([vStringJSON], {type: "text/plain;charset=utf-8"});
   // method saveAs() is defined in FileSaver.js so import filesaver.js and blob.js to your Javascript project
   saveAs(file,pFilename);
-  
+
 
 };
 //----End of Method export Definition
@@ -465,12 +504,12 @@ Editor4JSON.prototype.export = function (pFile,pJSON) {
 //# PUBLIC Method: exportData()
 //#    used in Class: Editor4JSON
 //# Parameter:
-//#    
+//#
 //# Comment:
 //#    exportData() exports the JSON data in this.aData as file. The filename is defined by this.aName. if aName="myjson" the filename is "myjson.json"
-//# 
+//#
 //# created with JSCC  2017/03/05 18:13:28
-//# last modifications 2017/06/02 4:56:59
+//# last modifications 2017/06/02 20:56:06
 //#################################################################
 
 Editor4JSON.prototype.exportData = function () {
@@ -492,12 +531,12 @@ Editor4JSON.prototype.exportData = function () {
 //# PUBLIC Method: exportSchema()
 //#    used in Class: Editor4JSON
 //# Parameter:
-//#    
+//#
 //# Comment:
 //#    exportSchema() exports the JSON schema in this.aSchemaJSON as file. The filename is defined by this.aName. if aName="myjson" the filename is "myjson_schema.json"
-//# 
+//#
 //# created with JSCC  2017/03/05 18:13:28
-//# last modifications 2017/06/02 4:56:59
+//# last modifications 2017/06/02 20:56:06
 //#################################################################
 
 Editor4JSON.prototype.exportSchema = function () {
@@ -524,7 +563,7 @@ Editor4JSON.prototype.exportSchema = function () {
 //#    the LocalStorageID for an item may not contain a dot . Name
 //# Return: String
 //# created with JSCC  2017/03/05 18:13:28
-//# last modifications 2017/06/02 4:56:59
+//# last modifications 2017/06/02 20:56:06
 //#################################################################
 
 Editor4JSON.prototype.getLocalStorageID4Name = function (pName) {
@@ -537,7 +576,7 @@ Editor4JSON.prototype.getLocalStorageID4Name = function (pName) {
   //-------------------------------------------------------
 
   return pName.replace(/[^A-Za-z0-9]/g,"_");
-  
+
 
 };
 //----End of Method getLocalStorageID4Name Definition
@@ -547,12 +586,12 @@ Editor4JSON.prototype.getLocalStorageID4Name = function (pName) {
 //# PUBLIC Method: loadLS()
 //#    used in Class: Editor4JSON
 //# Parameter:
-//#    
+//#
 //# Comment:
 //#    loadLS() loads the JSON file from Local Storage
-//# 
+//#
 //# created with JSCC  2017/03/05 18:13:28
-//# last modifications 2017/06/02 4:56:59
+//# last modifications 2017/06/02 20:56:06
 //#################################################################
 
 Editor4JSON.prototype.loadLS = function () {
@@ -571,10 +610,14 @@ Editor4JSON.prototype.loadLS = function () {
         var vJSONstring = localStorage.getItem(this.aName);
   	  if (!vJSONstring) {
           console.log("JSON-DB '"+this.aName+"' undefined in Local Storage.\nSave default as JSON");
-          localStorage.setItem(this.aName, JSON.stringify(this.aData));
+          localStorage.setItem(this.aName, JSON.stringify(this.getEditorData()));
   	  } else {
           console.log("parse DB '"+this.aName+"') from LocalStorage JSONstring='"+vJSONstring.substr(0,120)+"...'");
-          this.aData = JSON.parse(vJSONstring);
+          try {
+              this.setEditorData(JSON.parse(vJSONstring));
+          } catch(e) {
+              alert(e)
+          };
   	  }
       } else {
         console.log("JSON-DB '"+this.aName+"' is undefined in Local Storage.\nSave default as JSON");
@@ -592,12 +635,12 @@ Editor4JSON.prototype.loadLS = function () {
 //# PUBLIC Method: saveLS()
 //#    used in Class: Editor4JSON
 //# Parameter:
-//#    
+//#
 //# Comment:
 //#    saveLS() stores the JSON file in Local Storage
-//# 
+//#
 //# created with JSCC  2017/03/05 18:13:28
-//# last modifications 2017/06/02 4:56:59
+//# last modifications 2017/06/02 20:56:06
 //#################################################################
 
 Editor4JSON.prototype.saveLS = function () {
@@ -636,13 +679,13 @@ Editor4JSON.prototype.saveLS = function () {
 //# PUBLIC Method: validate()
 //#    used in Class: Editor4JSON
 //# Parameter:
-//#    
+//#
 //# Comment:
-//#    validates the current record in the large array against the schema. 
+//#    validates the current record in the large array against the schema.
 //#    Returns true if record in JSON editor valid according to the JSON schema in this.aSchemaJSON
 //# Return: Boolean
 //# created with JSCC  2017/03/05 18:13:28
-//# last modifications 2017/06/02 4:56:59
+//# last modifications 2017/06/02 20:56:06
 //#################################################################
 
 Editor4JSON.prototype.validate = function () {
@@ -654,7 +697,7 @@ Editor4JSON.prototype.validate = function () {
   //    vMyInstance.validate();
   //-------------------------------------------------------
 
-  
+
   // Get an array of errors from the validator
   //var errors = editor.validate();
   var errors = this.aEditor.validate();
@@ -662,22 +705,27 @@ Editor4JSON.prototype.validate = function () {
   if (errors.length) {
     vValid = false;
   };
-  var indicator = document.getElementById('valid_indicator');
+  var vID = this.aDOMID['valid_indicator'] || 'valid_indicator';
+  var indicator = document.getElementById(vID);
   if (!indicator) {
-      console.log("DOM element 'valid_indicator' does not exist")
+      console.log("DOM element '"+vID+"' does not exist")
   } else {
       if (errors.length) {
           // Not valid
-          indicator.style.color = 'red';
-          indicator.textContent = "not valid";
+          //indicator.style.color = 'red';
+          indicator.style.color = 'white';
+          indicator.style.backgroundColor = 'red';
+          indicator.textContent = " not valid ";
       } else {
           // Valid
-          indicator.style.color = 'green';
-          indicator.textContent = "valid";
+          //indicator.style.color = 'green';
+          indicator.style.color = 'white';
+          indicator.style.backgroundColor = 'green';
+          indicator.textContent = " valid ";
       }
   };
   return vValid;
-  
+
 
 };
 //----End of Method validate Definition
@@ -687,12 +735,12 @@ Editor4JSON.prototype.validate = function () {
 //# PUBLIC Method: onChange()
 //#    used in Class: Editor4JSON
 //# Parameter:
-//#    
+//#
 //# Comment:
-//#    handle onChange event from the JSON editor developed by Jeremy Dorn. This method updates the content in the editor with the record in this.aData[this.current] 
-//# 
+//#    handle onChange event from the JSON editor developed by Jeremy Dorn. This method updates the content in the editor with the record in this.aData[this.current]
+//#
 //# created with JSCC  2017/03/05 18:13:28
-//# last modifications 2017/06/02 4:56:59
+//# last modifications 2017/06/02 20:56:06
 //#################################################################
 
 Editor4JSON.prototype.onChange = function () {
@@ -704,19 +752,186 @@ Editor4JSON.prototype.onChange = function () {
   //    vMyInstance.onChange();
   //-------------------------------------------------------
 
-  var vValid = this.validate();
-  if (this.current < 0) {
-      this.current = 0
+  if (this.current > -1) {
+      if (this.current < this.aData.length) {
+      	this.aData[this.current] = this.aEditor.getValue();
+			};
   };
-  // it is possible to make the update of aData dependent on the return boolean of validate
-  // with the following update the JSON editor is updated if valid or not
-  this.aData[this.current] = this.aEditor.getValue();
+  this.saveLS();
 
 };
 //----End of Method onChange Definition
 
 
-    
+//#################################################################
+//# PUBLIC Method: deleteRecord()
+//#    used in Class: Editor4JSON
+//# Parameter:
+//#
+//# Comment:
+//#    delete current record in array and decrease current if is the last
+//#
+//# created with JSCC  2017/03/05 18:13:28
+//# last modifications 2017/06/02 20:56:06
+//#################################################################
+
+Editor4JSON.prototype.deleteRecord = function () {
+  //----Debugging------------------------------------------
+  // console.log("js/editor4json.js - Call: deleteRecord()");
+  // alert("js/editor4json.js - Call: deleteRecord()");
+  //----Create Object/Instance of Editor4JSON----
+  //    var vMyInstance = new Editor4JSON();
+  //    vMyInstance.deleteRecord();
+  //-------------------------------------------------------
+
+  this.check(); // is in the range of indices of the array this.aData
+  if (this.current > -1) {
+      this.aData.splice(this.current, 1);
+  };
+  this.edit();
+
+};
+//----End of Method deleteRecord Definition
+
+
+//#################################################################
+//# PUBLIC Method: deleteAsk()
+//#    used in Class: Editor4JSON
+//# Parameter:
+//#
+//# Comment:
+//#    deleteAsk() asks the user if deleteRecord() should be performed
+//#
+//# created with JSCC  2017/03/05 18:13:28
+//# last modifications 2017/06/02 20:56:06
+//#################################################################
+
+Editor4JSON.prototype.deleteAsk = function () {
+  //----Debugging------------------------------------------
+  // console.log("js/editor4json.js - Call: deleteAsk()");
+  // alert("js/editor4json.js - Call: deleteAsk()");
+  //----Create Object/Instance of Editor4JSON----
+  //    var vMyInstance = new Editor4JSON();
+  //    vMyInstance.deleteAsk();
+  //-------------------------------------------------------
+
+  var vOK = confirm("Do you really want to delete the current record?");
+  if(vOK == true) {
+      this.deleteRecord();
+  } else {
+      console.log("Delete Record cancelled")
+  };
+
+};
+//----End of Method deleteAsk Definition
+
+
+//#################################################################
+//# PUBLIC Method: check()
+//#    used in Class: Editor4JSON
+//# Parameter:
+//#
+//# Comment:
+//#    checks if the index of the array is between 0 and this.aData.lenth
+//#
+//# created with JSCC  2017/03/05 18:13:28
+//# last modifications 2017/06/02 20:56:06
+//#################################################################
+
+Editor4JSON.prototype.check = function () {
+  //----Debugging------------------------------------------
+  // console.log("js/editor4json.js - Call: check()");
+  // alert("js/editor4json.js - Call: check()");
+  //----Create Object/Instance of Editor4JSON----
+  //    var vMyInstance = new Editor4JSON();
+  //    vMyInstance.check();
+  //-------------------------------------------------------
+
+  if (this.aData.length === 0) {
+      this.current = -1
+  } else {
+      if (this.current < 0) {
+          this.current = 0
+      };
+      if (this.current >= this.aData.length) {
+          this.current = this.aData.length - 1;
+      };
+  };
+};
+//----End of Method check Definition
+
+
+//#################################################################
+//# PUBLIC Method: updateDOM()
+//#    used in Class: Editor4JSON
+//# Parameter:
+//#
+//# Comment:
+//#    updateDOM() updates the index of the currently edited record from the array and updates the length of the array e.g. if a new record was pushed the array this.aData
+//#
+//# created with JSCC  2017/03/05 18:13:28
+//# last modifications 2017/06/02 20:56:06
+//#################################################################
+
+Editor4JSON.prototype.updateDOM = function () {
+  //----Debugging------------------------------------------
+  // console.log("js/editor4json.js - Call: updateDOM()");
+  // alert("js/editor4json.js - Call: updateDOM()");
+  //----Create Object/Instance of Editor4JSON----
+  //    var vMyInstance = new Editor4JSON();
+  //    vMyInstance.updateDOM();
+  //-------------------------------------------------------
+
+  //--- update current array index ------------
+  var vID = this.aDOMID["current"] || "array_index";
+  write2value(vID,this.current);
+  //--- update array length -------------------
+  vID = this.aDOMID["length"] || "array_length";
+  write2innerHTML(vID,this.aData.length);
+  //--- update title ID='record_title'---------
+  if (this.aDOMID.hasOwnProperty("title")) {
+      vID = this.aDOMID["title"];
+      if (this.aData[this.current].hasOwnProperty(vID)) {
+          write2innerHTML(vID,this.aData.length);
+      };
+  };
+  // validate the record against Schema JSON
+  this.validate();
+
+};
+//----End of Method updateDOM Definition
+
+
+//#################################################################
+//# PUBLIC Method: setEditorData()
+//#    used in Class: Editor4JSON
+//# Parameter:
+//#    pEditorData:Hash
+//# Comment:
+//#    setEditorData() sets the Editor with current, data and schema
+//#
+//# created with JSCC  2017/03/05 18:13:28
+//# last modifications 2017/06/02 20:56:06
+//#################################################################
+Editor4JSON.prototype.setEditorData = function (pEditorData) {
+  //----Debugging------------------------------------------
+  // console.log("js/editor4json.js - Call: setEditorData(pEditorData:Hash)");
+  // alert("js/editor4json.js - Call: setEditorData(pEditorData:Hash)");
+  //----Create Object/Instance of Editor4JSON----
+  //    var vMyInstance = new Editor4JSON();
+  //    vMyInstance.setEditorData(pEditorData);
+  //-------------------------------------------------------
+
+  this.current = pEditorData["current"] || 0;
+  this.aData = pEditorData["data"] || [];
+  this.aSchemaJSON = pEditorData["schema"] || vDataJSON["car"];
+
+};
+//----End of Method setEditorData Definition
+
+
+
+
 //-------------------------------------------
 //---End Definition of Class-----------------
 // JS Class: Editor4JSON
