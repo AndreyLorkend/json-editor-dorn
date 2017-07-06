@@ -480,13 +480,13 @@ Editor4JSON.prototype.getSchema = function () {
 //# last modifications 2017/06/02 20:56:06
 //#################################################################
 
-Editor4JSON.prototype.export = function () {
+Editor4JSON.prototype.export = function (pFilename,pJSON) {
   //----Debugging------------------------------------------
-  // console.log("js/editor4json.js - Call: export()");
-  // alert("js/editor4json.js - Call: export()");
+  // console.log("js/editor4json.js - Call: export(pFilename,pJSON)");
+  // alert("js/editor4json.js - Call: export(pFilename,pJSON)");
   //----Create Object/Instance of Editor4JSON----
   //    var vMyInstance = new Editor4JSON();
-  //    vMyInstance.export();
+  //    vMyInstance.export(pFilename,pJSON);
   //-------------------------------------------------------
 
   var vStringJSON = JSON.stringify(pJSON,null,4);
@@ -929,6 +929,128 @@ Editor4JSON.prototype.setEditorData = function (pEditorData) {
 };
 //----End of Method setEditorData Definition
 
+
+//#################################################################
+//# PUBLIC Method: getEditorData()
+//#    used in Class: Editor4JSON
+//# Parameter:
+//#
+//# Comment:
+//#    getEditorData() create a Hash for this.current, this.aData and this.aSchema
+//# Return: Hash
+//# created with JSCC  2017/03/05 18:13:28
+//# last modifications 2017/07/06 9:24:10
+//#################################################################
+
+Editor4JSON.prototype.getEditorData = function () {
+  //----Debugging------------------------------------------
+  // console.log("js/editor4json.js - Call: getEditorData():Hash");
+  // alert("js/editor4json.js - Call: getEditorData():Hash");
+  //----Create Object/Instance of Editor4JSON----
+  //    var vMyInstance = new Editor4JSON();
+  //    vMyInstance.getEditorData();
+  //-------------------------------------------------------
+
+  this.aSchema = pSchema;
+  this.aData = pData;
+  this.loadLS(); // load aData from local storage if that exists
+  this.aDOMID = pDOMID; // is a Hash with keys "name" of Schema, DOM ID "editor", "validator",
+  this.aName = pDOMID["name"] || "myjson";
+  this.aEditorConfig = {
+          // Enable fetching schemas via ajax
+          ajax: true,
+
+          // The schema for the editor
+          schema: pSchema,
+
+
+          // Disable additional properties
+          no_additional_properties: true,
+
+          // Require all properties by default
+          required_by_default: true
+        };
+  // Seed the form with a starting value for the Editor if pData contains at least one record
+   if (pData.length > 0) {
+      this.aEditorConfig.startval = pData[0];
+  };
+  // create the editor
+  var vEditorDOM = document.getElementById(this.aDOMID["editor"]);
+  if (vEditorDOM) {
+      this.aEditor = new JSONEditor(vEditorDOM,this.aEditorConfig);
+  } else {
+      console.log("ERROR: Editor DOM with ID=‘"+this.aDOMID["editor"]+"' does not exist!")
+  };
+
+  // Hook up the validation indicator to update its
+  // status whenever the editor changes
+  this.aEditor.on('change',function() {
+          // upadte the currect record in large array
+          vEditor4JSON.onChange()
+        });
+  //update the current index
+  this.updateDOM();
+
+
+};
+//----End of Method getEditorData Definition
+
+
+//#################################################################
+//# PUBLIC Method: load()
+//#    used in Class: Editor4JSON
+//# Parameter:
+//#
+//# Comment:
+//#    loads the file from Local Storage and updates the DOM values with current, aData loadLS() and load() cannot be merged because loadLS() is called in the this.init() without the possibility to edit() due to the fact that the JSON editor is not created and dependent on the loaded values of the schema
+//#
+//# created with JSCC  2017/03/05 18:13:28
+//# last modifications 2017/07/06 9:24:10
+//#################################################################
+
+Editor4JSON.prototype.load = function () {
+  //----Debugging------------------------------------------
+  // console.log("js/editor4json.js - Call: load()");
+  // alert("js/editor4json.js - Call: load()");
+  //----Create Object/Instance of Editor4JSON----
+  //    var vMyInstance = new Editor4JSON();
+  //    vMyInstance.load();
+  //-------------------------------------------------------
+
+  this.loadLS();
+  this.edit();
+  this.updateDOM();
+
+};
+//----End of Method load Definition
+
+
+//#################################################################
+//# PUBLIC Method: save()
+//#    used in Class: Editor4JSON
+//# Parameter:
+//#
+//# Comment:
+//#    save() stores current index, JSON data and JSON schema with storeLS() into local storage and exports the current JSON data as file
+//#
+//# created with JSCC  2017/03/05 18:13:28
+//# last modifications 2017/07/06 9:24:10
+//#################################################################
+
+Editor4JSON.prototype.save = function () {
+  //----Debugging------------------------------------------
+  // console.log("js/editor4json.js - Call: save()");
+  // alert("js/editor4json.js - Call: save()");
+  //----Create Object/Instance of Editor4JSON----
+  //    var vMyInstance = new Editor4JSON();
+  //    vMyInstance.save();
+  //-------------------------------------------------------
+
+  this.saveLS();
+  this.exportData();
+
+};
+//----End of Method save Definition
 
 
 

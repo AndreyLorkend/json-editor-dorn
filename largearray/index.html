@@ -62,26 +62,24 @@
  	 	<button id='bOpenJSON' style="color: white;background-color: #225988"  onclick="$( '#fileJSON' ).trigger('click');return false">
 			<i class="fa fa-folder-open-o" aria-hidden="true"></i> Load
 		</button>
-		<button id='bOpenJSON' style="color: white;background-color: #225988">
+		<button id='bSaveJSON' style="color: white;background-color: #225988"  onclick="vEditor4JSON.save();return false">
 			<i class="fa fa-floppy-o" aria-hidden="true"></i> Save
 		</button>
-    <p id="load_filename">
-    </p>
-		&nbsp;
+    &nbsp;
 		&nbsp;
 
-		<button id='bFastBackward' onclick="vEditor4JSON.first()">
+		<button id='bFastBackward' onclick="vEditor4JSON.first();return false">
 			<i class="fa fa-fast-backward" aria-hidden="true"></i>
 		</button>
-		<button id='bStepBackward' onclick="vEditor4JSON.prev()">
+		<button id='bStepBackward' onclick="vEditor4JSON.prev();return false">
 			<i class="fa fa-step-backward" aria-hidden="true"></i>
 		</button>
-		<input type="text" id="array_index" value="0" size="3" onchange="this.value=this.value.replace(/[^0-9]g,'');vEditor4JSON.goto(parseInt(this.value))">
+		<input type="text" id="array_index" value="0" size="3" onchange="this.value=this.value.replace(/[^0-9]g,'');vEditor4JSON.goto(parseInt(this.value));return false">
 		<label id="array_length">0</label>
-		<button id='bStepForward'  onclick="vEditor4JSON.next()">
+		<button id='bStepForward'  onclick="vEditor4JSON.next();return false">
 			<i class="fa fa-step-forward" aria-hidden="true"></i>
 		</button>
-	   <button id='bFastForward' onclick="vEditor4JSON.last()">
+	   <button id='bFastForward' onclick="vEditor4JSON.last();return false">
 			<i class="fa fa-fast-forward" aria-hidden="true"></i>
 		</button>
 		&nbsp;
@@ -93,6 +91,8 @@
 			<i class="fa fa-minus-square" aria-hidden="true"></i> Delete
 		</button>
     <i id='valid_indicator'>valid or not valid</i>
+    <div class="text" id="load_filename"></div>
+    <hr>
 	</div>
 
     <div id='editor_holder' style="margin-right: 30px; margin-left: 30px"></div>
