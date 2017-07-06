@@ -203,7 +203,7 @@ Editor4JSON.prototype.init = function (pDOMID,pData,pSchema) {
       this.aEditor = new JSONEditor(vEditorDOM,this.aEditorConfig);
   } else {
       console.log("ERROR: Editor DOM with ID=‘"+this.aDOMID["editor"]+"' does not exist!")
-  }
+  };
 
   // Hook up the validation indicator to update its
   // status whenever the editor changes
@@ -211,7 +211,7 @@ Editor4JSON.prototype.init = function (pDOMID,pData,pSchema) {
           // upadte the currect record in large array
           vEditor4JSON.onChange()
         });
-
+	this.updateDOM();
 };
 //----End of Method init Definition
 
@@ -884,7 +884,7 @@ Editor4JSON.prototype.updateDOM = function () {
 
   //--- update current array index ------------
   var vID = this.aDOMID["current"] || "array_index";
-  write2value(vID,this.current);
+  write2value(vID,(this.current+1));
   //--- update array length -------------------
   vID = this.aDOMID["length"] || "array_length";
   write2innerHTML(vID,this.aData.length);

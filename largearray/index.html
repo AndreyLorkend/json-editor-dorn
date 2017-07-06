@@ -52,28 +52,36 @@
     </script>
  </head>
   <body style="margin:20px">
+    <!-- this is hidden input file div to manage a file upload of a JSON into the browser -->
+    <div data-role="fieldcontain" style="display:none">
+         <input type="file" id="fileJSON" name="fileJSON" value="Select JSON File" id="fileJSON" onchange="$('#load_filename').html('<b>File:</b> '+ this.value.replace(/.*[\/\\]/, ''))"/>
+    </div>
+
   	<div id="divNavigate"  align="center">
- 	 	<button id='bOpenJSON' style="color: white;background-color: #225988">
+    <!-- the button vOpenJSON generates an onclick event for the fileJSON input file element in the DOM -->
+ 	 	<button id='bOpenJSON' style="color: white;background-color: #225988"  onclick="$( '#fileJSON' ).trigger('click');return false">
 			<i class="fa fa-folder-open-o" aria-hidden="true"></i> Load
 		</button>
 		<button id='bOpenJSON' style="color: white;background-color: #225988">
 			<i class="fa fa-floppy-o" aria-hidden="true"></i> Save
 		</button>
+    <p id="load_filename">
+    </p>
 		&nbsp;
 		&nbsp;
 
-		<button id='bFastBackward'>
+		<button id='bFastBackward' onclick="vEditor4JSON.first()">
 			<i class="fa fa-fast-backward" aria-hidden="true"></i>
 		</button>
-		<button id='bStepBackward'>
+		<button id='bStepBackward' onclick="vEditor4JSON.prev()">
 			<i class="fa fa-step-backward" aria-hidden="true"></i>
 		</button>
 		<input type="text" id="array_index" value="0" size="3" onchange="this.value=this.value.replace(/[^0-9]g,'');vEditor4JSON.goto(parseInt(this.value))">
 		<label id="array_length">0</label>
-		<button id='bStepForward'>
+		<button id='bStepForward'  onclick="vEditor4JSON.next()">
 			<i class="fa fa-step-forward" aria-hidden="true"></i>
 		</button>
-	   <button id='bFastForward'>
+	   <button id='bFastForward' onclick="vEditor4JSON.last()">
 			<i class="fa fa-fast-forward" aria-hidden="true"></i>
 		</button>
 		&nbsp;
@@ -144,11 +152,11 @@
       //-------------------------------------------------------
       //---JSON EDITOR Handle Change Event---------------------
       //-------------------------------------------------------
-      document.getElementById('bFastBackward').addEventListener('click',vEditor4JSON.first);
-      document.getElementById('bStepBackward').addEventListener('click',vEditor4JSON.prev);
-      document.getElementById('bStepBackward').addEventListener('click',vEditor4JSON.next);
-      document.getElementById('bFastForward').addEventListener('click',vEditor4JSON.last);
-      document.getElementById('bFastForward').addEventListener('click',vEditor4JSON.last);
+      // document.getElementById('bFastBackward').addEventListener('click',vEditor4JSON.first);
+      // document.getElementById('bStepBackward').addEventListener('click',vEditor4JSON.prev);
+      // document.getElementById('bStepBackward').addEventListener('click',vEditor4JSON.next);
+      // document.getElementById('bFastForward').addEventListener('click',vEditor4JSON.last);
+      // document.getElementById('bFastForward').addEventListener('click',vEditor4JSON.last);
       // EXPORT JSON: Hook up the submit button to download JSONDB
       document.getElementById('bExportJSON').addEventListener('click',function() {
         var vContent = JSON.stringify(editor.getValue(),null,4);
