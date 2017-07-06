@@ -1,6 +1,7 @@
 ## Javascript Class: Editor4JSON
 created Javascript Class Creator JSCC 2017/07/06 6:50:57
 https://niebert.github.io/JavascriptClassCreator
+File: js/editor4json.js
 
 ### Attributes: Editor4JSON
 
