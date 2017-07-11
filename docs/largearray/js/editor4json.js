@@ -67,9 +67,9 @@ function Editor4JSON () {
 	//---PUBLIC: aDOMID (Hash): the attribute 'aDOMID' stores in ids of DOM element, e.g. editor_holder, valid ...
 	this.aDOMID = null;
 
-    //---------------------------------------------------------------------
-    //---Methods of Class "Editor4JSON()"
-    //---------------------------------------------------------------------
+  //---------------------------------------------------------------------
+  //---Methods of Class "Editor4JSON()"
+  //---------------------------------------------------------------------
 	//----PUBLIC Method: Editor4JSON.init(pID4DOM:Hash,pData:Array,pSchema:Hash)-----
 	// init(pID4DOM,pData,pSchema)
 	//	pDOMID is hash with DOM ids that define the DOM element where the JSON editor is injected (editor_holder of JSON editor).
@@ -181,6 +181,9 @@ Editor4JSON.prototype.init = function (pDOMID,pData,pSchema) {
 		this.aData = pData;
 	};
   this.loadLS(); // load aData from local storage if that exists
+	if (this.aData.length == 0) {
+		this.aData.push({"date":new Date().toLocaleString()});
+	};
   this.aDOMID = pDOMID;
   this.aName = pDOMID["name"] || "myjson";
   this.aEditorConfig = {
@@ -190,9 +193,11 @@ Editor4JSON.prototype.init = function (pDOMID,pData,pSchema) {
           // The schema for the editor
           schema: pSchema,
 
+					// Disable JSON edit button
+          disable_edit_json: true,
 
           // Disable additional properties
-          no_additional_properties: true,
+          no_additional_properties: false,
 
           // Require all properties by default
           required_by_default: true
@@ -412,8 +417,8 @@ Editor4JSON.prototype.edit = function () {
       console.log("current index in large array is not for the large array - use first element")
       this.current = 0;
   };
-  this.aEditor.setValue(this.aData[this.current]);
-  this.updateDOM();
+	this.aEditor.setValue(this.aData[this.current]);
+	this.updateDOM();
 
 };
 //----End of Method edit Definition
@@ -606,7 +611,7 @@ Editor4JSON.prototype.getLocalStorageID4Name = function (pName) {
 
 Editor4JSON.prototype.loadLS = function () {
   //----Debugging------------------------------------------
-  // console.log("js/editor4json.js - Call: loadLS()");
+  console.log("js/editor4json.js - Call: loadLS()");
   // alert("js/editor4json.js - Call: loadLS()");
   //----Create Object/Instance of Editor4JSON----
   //    var vMyInstance = new Editor4JSON();
@@ -887,8 +892,8 @@ Editor4JSON.prototype.check = function () {
 //#################################################################
 
 Editor4JSON.prototype.updateDOM = function () {
-  //----Debugging------------------------------------------
-  // console.log("js/editor4json.js - Call: updateDOM()");
+	//----Debugging------------------------------------------
+  console.log("js/editor4json.js - Call: updateDOM() current="+this.current);
   // alert("js/editor4json.js - Call: updateDOM()");
   //----Create Object/Instance of Editor4JSON----
   //    var vMyInstance = new Editor4JSON();
@@ -897,6 +902,13 @@ Editor4JSON.prototype.updateDOM = function () {
 
   //--- update current array index ------------
   var vID = this.aDOMID["current"] || "array_index";
+	if (this.aData.length > 0) {
+		if (this.current == -1) {
+			this.current = 0;
+		}
+	};
+	//----Debugging------------------------------------------
+  console.log("js/editor4json.js - Call: updateDOM() current="+this.current+"/"+this.aData.length);
   write2value(vID,(this.current+1));
   //--- update array length -------------------
   vID = this.aDOMID["length"] || "array_length";
@@ -934,10 +946,10 @@ Editor4JSON.prototype.setEditorData = function (pEditorData) {
   //    var vMyInstance = new Editor4JSON();
   //    vMyInstance.setEditorData(pEditorData);
   //-------------------------------------------------------
-
+	console.log("setEditorData() without this.aSchemaJSON");
   this.current = pEditorData["current"] || 0;
   this.aData = pEditorData["data"] || [];
-  this.aSchemaJSON = pEditorData["schema"] || vDataJSON["car"];
+  // this.aSchemaJSON = pEditorData["schema"] || vDataJSON["car"];
 
 };
 //----End of Method setEditorData Definition

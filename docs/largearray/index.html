@@ -91,10 +91,10 @@
 
     <div id='editor_holder' style="margin-right: 30px; margin-left: 30px"></div>
     <div id='button_holder' style="margin:20px">
-      <button id='bExportJSON'>Export JSON</button>
-      <button id='bExportSchema'>Export JSON Schema</button>
-      <button id='bWinClose' onclick="window.close()" style="color: white;background-color: #225988">Close</button>
-      <button id='bExportEditorContent'>Export Editor innerHTML - Debug</button>
+      <button id='bExportJSON' onclick="vEditor4JSON.exportData()" style="display:none">Export JSON</button>
+      <button id='bExportSchema' onclick="vEditor4JSON.exportSchema()">Export JSON Schema</button>
+      <button id='bWinClose' onclick="window.close()" style="color: white;background-color: #225988;display:none">Close</button>
+      <button id='bExportEditorContent'  style="display:none">Export Editor innerHTML - Debug</button>
       <button id='view' onclick="console.log(JSON.stringify(editor.getValue()))" style="display:none">View (console.log)</button>
     </div>
     <script>
@@ -145,23 +145,6 @@
       var editor = vEditor4JSON.aEditor;
       //-------------------------------------------------------
       //---JSON EDITOR Handle Change Event---------------------
-      //-------------------------------------------------------
-      // document.getElementById('bFastBackward').addEventListener('click',vEditor4JSON.first);
-      // document.getElementById('bStepBackward').addEventListener('click',vEditor4JSON.prev);
-      // document.getElementById('bStepBackward').addEventListener('click',vEditor4JSON.next);
-      // document.getElementById('bFastForward').addEventListener('click',vEditor4JSON.last);
-      // document.getElementById('bFastForward').addEventListener('click',vEditor4JSON.last);
-      // EXPORT JSON: Hook up the submit button to download JSONDB
-      document.getElementById('bExportJSON').addEventListener('click',function() {
-        var vContent = JSON.stringify(editor.getValue(),null,4);
-        // Get the value from the editor
-        var vFile = (vSchemaID+".json").toLowerCase();
-        saveFile2HDD(vFile,vContent);
-        //console.log(editor.getValue());
-      });
-      //-------------------------------------------------------
-      // EXPORT JSON SCHEMA: Hook up the submit button to download JSON Schema
-      document.getElementById('bExportSchema').addEventListener('click',vEditor4JSON.exportData);
       //-------------------------------------------------------
       // Hook up the submit button to log to the console
       document.getElementById('bExportEditorContent').addEventListener('click',function() {
