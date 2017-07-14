@@ -12,6 +12,10 @@ vDataJSON["mapobject"] = {
       "title": "Geolocation:",
       "type": "string",
     },
+    "url": {
+      "title": "URL:",
+      "type": "string",
+    },
     "SDG": {
       "title": "List SDG",
       "type":"array",

@@ -183,7 +183,7 @@ Editor4JSON.prototype.init = function (pDOMID,pData,pSchema) {
   this.loadLS(); // load aData from local storage if that exists
 	if (this.aData.length == 0) {
 		this.aData.push({"date":new Date().toLocaleString()});
-	};
+	 };
   this.aDOMID = pDOMID;
   this.aName = pDOMID["name"] || "myjson";
   this.aEditorConfig = {
