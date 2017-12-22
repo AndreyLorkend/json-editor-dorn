@@ -2232,9 +2232,66 @@ JSONEditor.defaults.editors.string = JSONEditor.AbstractEditor.extend({
         // The theme
         if(JSONEditor.plugins.ace.theme) this.ace_editor.setTheme('ace/theme/'+JSONEditor.plugins.ace.theme);
         // The mode
-        mode = window.ace.require("ace/mode/"+mode);
-        if(mode) this.ace_editor.getSession().setMode(new mode.Mode());
-        
+        //mode = window.ace.require("ace/mode/"+mode);
+        //if(mode) this.ace_editor.getSession().setMode(new mode.Mode());
+                console.log("Mode ACE Editor: '"+mode+"'");
+        if ([
+            'actionscript',
+            'batchfile',
+            'bbcode',
+            'c',
+            'c++',
+            'cpp',
+            'coffee',
+            'csharp',
+            'css',
+            'dart',
+            'django',
+            'ejs',
+            'erlang',
+            'golang',
+            'groovy',
+            'handlebars',
+            'haskell',
+            'haxe',
+            'html',
+            'ini',
+            'jade',
+            'java',
+            'javascript',
+            'json',
+            'less',
+            'lisp',
+            'lua',
+            'makefile',
+            'markdown',
+            'matlab',
+            'mysql',
+            'objectivec',
+            'pascal',
+            'perl',
+            'pgsql',
+            'php',
+            'python',
+            'r',
+            'ruby',
+            'sass',
+            'scala',
+            'scss',
+            'smarty',
+            'sql',
+            'stylus',
+            'svg',
+            'twig',
+            'vbscript',
+            'xml',
+            'yaml'
+          ].indexOf(this.format) >= 0) {
+          //mode = window.ace.require("ace/mode/"+mode);
+          //this.ace_editor.getSession().setMode(new mode.Mode());
+          this.ace_editor.session.setMode('ace/mode/'+mode);
+        };
+
         // Listen for changes
         this.ace_editor.on('change',function() {
           var val = self.ace_editor.getValue();

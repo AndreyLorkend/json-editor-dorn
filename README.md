@@ -5,11 +5,21 @@ JSON Editor with JSON2Schema Generator
 The JSON to Schema generator is stored in ___docs/___ directory of this repository, so that it is available as online service for testing the HTML file [json2schema.html](https://niebert.github.io/json-editor/doc4json2schema.html). JSON2Schema uses the [Editor ACE](https://ace.c9.io/) for the JSON file and JSON Schema.
 
 ### Changes in Fork:
+* ACE does not seem to support syntax highlighting in a WebApp due to "require"-call for the mode
 * incorporated the ___hidden.js___ in JSON editor to hide certain values in the JSON tree of the editor, this [fork of json-editor by Mehmet Baker](https://github.com/mehmetb/json-editor) is currently pull request to original repository maintained by Jeremy Dorn.
 )
 * added a ___/docs___ created a direct link to ___json2schema.html___. This helps users of the JSON editor to create a JSON schema, that defines the structure of desired JSON file.
 * the JSON2Schema converter can be populated remotely with a HTML form (see [doc4json2schema.html](https://niebert.github.io/json-editor/doc4json2schema.html))
 * added a reference to this tool in [JSON-Editor Wiki](https://github.com/jdorn/json-editor/wiki/JSON2Schema) of Jeremy Dorn
+
+### JSON Editor used in the following WebApp
+* https://niebert.github.io/Markers4Map - Place Markers on OpenLayers-Map - [GitHub-Repository](https://www.github.com/niebert/Markers4Map)
+* https://niebert.github.io/Mapper4SDG - Mapper for Sustainable Development Goals -  [GitHub-Repository](https://www.github.com/niebert/Mapper4SDG)
+* https://niebert.github.io/Mixare4JSON - Mixare is an Augmented Reality App - WebApp allocates Objects on the Map for Mixare and export the data to JSON file - [GitHub-Repository](https://www.github.com/niebert/Mixare4JSON)
+* https://niebert.github.io/openlayer_selectlocation - Use for selecting a geolocation on the map and JSON editor stores the latitude and longitude to JSON editor - in Marker4Map, Mapper4SDG, Mixare4JSON, ... [GitHub-Repository](https://www.github.com/niebert/openlayer_selectlocation)
+* https://niebert.github.io/openlayer_display_markers - Used to display JSON data from editor on a OpenLayers Map  - [GitHub-Repository](https://www.github.com/niebert/openlayer_display_markers)
+* https://niebert.github.io/JavascriptClassCreator - Prototype of JavascriptClass Editor that used partially JSON Editor - needs refactoring - leverage full potential of JSON-Editor for it - [GitHub-Repository](https://www.github.com/niebert/JavascriptClassCreator)
+* https://niebert.github.io/ClassEditorUML - JavaScriptClassEditor based on JSON-Editor with ACE-Editor and Syntax highlighting - [GitHub-Repository](https://www.github.com/niebert/)
 
 ### Resources for the Fork
 * ___json2schema.html___ was inspired by [https://www.jsonschema.net](https://www.jsonschema.net/#/editor) to generate a schema from a given JSON.

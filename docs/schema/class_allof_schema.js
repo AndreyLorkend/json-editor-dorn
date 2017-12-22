@@ -16,14 +16,13 @@ vDataJSON["class_schema"] = {
         "attributes": {
             "title": "Attribute",
             "type": "array",
-            "format": "table",
+            "format": "tabs",
             "uniqueItems": true,
             "items": {
                 "title": "Attrib",
                 "type": "object",
                 "uniqueItems": true,
                 "headerTemplate": "{{self.name}}",
-            	"format": "table",
                 "properties": {
                     "visibility": {
                         "title": "Visibility",
@@ -96,12 +95,7 @@ vDataJSON["class_schema"] = {
                                 "class": {
                                     "title": "Class",
                                     "$ref": "#/definitions/selectclass"
-                                },
-                   				 "comment": {
-                        			"title": "Comment",
-                        			"$ref": "#/definitions/comment",
-                        			"default": "What do you stored in this attribute?"
-                    			}
+                                }
                             }
                         }
                     },
