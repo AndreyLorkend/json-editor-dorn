@@ -1,3 +1,45 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Javascript Class: Editor4JSON](#javascript-class-editor4json)
+  - [Attributes: Editor4JSON](#attributes-editor4json)
+    - [aEditor:JSONEditor](#aeditorjsoneditor)
+    - [aName:String](#anamestring)
+    - [aData:Array](#adataarray)
+    - [current:](#current)
+    - [aSchemaJSON:](#aschemajson)
+    - [aEditURL:String](#aediturlstring)
+    - [aDOMID:Hash](#adomidhash)
+  - [Methods: Editor4JSON](#methods-editor4json)
+    - [init(pDOMID:Hash,pData:Array,pSchema:Hash)](#initpdomidhashpdataarraypschemahash)
+    - [prev()](#prev)
+    - [next()](#next)
+    - [goto(i)](#gotoi)
+    - [first()](#first)
+    - [last()](#last)
+    - [edit()](#edit)
+    - [setSchema(pSchemaJSON:Hash)](#setschemapschemajsonhash)
+    - [getSchema():Hash](#getschemahash)
+    - [export()](#export)
+    - [exportData()](#exportdata)
+    - [exportSchema()](#exportschema)
+    - [getLocalStorageID4Name(pName:String):String](#getlocalstorageid4namepnamestringstring)
+    - [loadLS()](#loadls)
+    - [saveLS()](#savels)
+    - [validate():Boolean](#validateboolean)
+    - [onChange()](#onchange)
+    - [deleteRecord()](#deleterecord)
+    - [deleteAsk()](#deleteask)
+    - [check()](#check)
+    - [updateDOM()](#updatedom)
+    - [setEditorData(pEditorData:Hash)](#seteditordatapeditordatahash)
+    - [getEditorData():Hash](#geteditordatahash)
+    - [load()](#load)
+    - [save()](#save)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Javascript Class: Editor4JSON
 created Javascript Class Creator JSCC 2017/07/06 6:50:57
 https://niebert.github.io/JavascriptClassCreator

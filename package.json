@@ -27,6 +27,7 @@
     "node": ">= 0.8.0"
   },
   "devDependencies": {
+    "concat-files": "^0.1.1",
     "grunt": "~1.0.1",
     "grunt-contrib-concat": "~1.0.0",
     "grunt-contrib-jshint": "~1.0.0",
@@ -34,7 +35,9 @@
     "grunt-contrib-watch": "~1.0.0"
   },
   "scripts": {
+    "compress": "uglifyjs dist/jsoneditor.js --source-map -mc -o dist/jsoneditor.min.js",
     "build": "npm install && grunt",
+    "buildsh": "sh build.sh",
     "start": "grunt watch",
     "test": "grunt"
   }

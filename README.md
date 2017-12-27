@@ -2,13 +2,59 @@ JSON Editor with JSON2Schema Generator
 ===========
 
 ### JSON2Schema Generator
-The JSON to Schema generator is stored in ___docs/___ directory of this repository, so that it is available as online service for testing the HTML file [json2schema.html](https://niebert.github.io/json-editor/doc4json2schema.html). JSON2Schema uses the [Editor ACE](https://ace.c9.io/) for the JSON file and JSON Schema.
+The JSON to Schema generator is stored in `docs/` directory of this repository, so that it is available as online service for testing the HTML file [json2schema.html](https://niebert.github.io/json-editor/doc4json2schema.html). JSON2Schema uses the [Editor ACE](https://ace.c9.io/) for the JSON file and JSON Schema.
+
+### Table of Contents 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+  - [Changes in Fork:](#changes-in-fork)
+  - [JSON Editor used in the following WebApp](#json-editor-used-in-the-following-webapp)
+  - [Resources for the Fork](#resources-for-the-fork)
+- [Requirements](#requirements)
+  - [Optional Requirements](#optional-requirements)
+- [Usage](#usage)
+  - [Initialize](#initialize)
+    - [Options](#options)
+  - [Get/Set Value](#getset-value)
+  - [Validate](#validate)
+  - [Listen for Changes](#listen-for-changes)
+  - [Enable and Disable the Editor](#enable-and-disable-the-editor)
+  - [Destroy](#destroy)
+- [CSS Integration](#css-integration)
+  - [Icon Libraries](#icon-libraries)
+- [JSON Schema Support](#json-schema-support)
+  - [$ref and definitions](#ref-and-definitions)
+  - [hyper-schema links](#hyper-schema-links)
+  - [Property Ordering](#property-ordering)
+  - [Default Properties](#default-properties)
+  - [format](#format)
+    - [Specialized String Editors](#specialized-string-editors)
+    - [Booleans](#booleans)
+    - [Arrays](#arrays)
+    - [Objects](#objects)
+- [Editor Options](#editor-options)
+- [Dependencies](#dependencies)
+  - [Templates](#templates)
+  - [Enum Values](#enum-values)
+  - [Dynamic Headers](#dynamic-headers)
+  - [Custom Template Engines](#custom-template-engines)
+- [Language and String Customization](#language-and-string-customization)
+- [Custom Editor Interfaces](#custom-editor-interfaces)
+- [Select2 & Selectize Support](#select2--selectize-support)
+- [Custom Validation](#custom-validation)
+- [jQuery Integration](#jquery-integration)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ### Changes in Fork:
-* ACE does not seem to support syntax highlighting in a WebApp due to "require"-call for the mode
-* incorporated the ___hidden.js___ in JSON editor to hide certain values in the JSON tree of the editor, this [fork of json-editor by Mehmet Baker](https://github.com/mehmetb/json-editor) is currently pull request to original repository maintained by Jeremy Dorn.
+* uses `doctoc README.md` to create a table of contents for the README. Assumes `doctoc` to be install globally with `npm install doctoc -g`
+* grunt install seems to have some issues. Temporary workaround `build.sh` for Linux and MacOSX. It concats the code
+* ACE does not seem to support syntax highlighting in a WebApp due to "require"-call for the mode, fixed in `src/editors/string.js` in line 364 ff.
+* incorporated the `hidden.js` in JSON editor to hide certain values in the JSON tree of the editor, this [fork of json-editor by Mehmet Baker](https://github.com/mehmetb/json-editor) is currently pull request to original repository maintained by Jeremy Dorn.
 )
-* added a ___/docs___ created a direct link to ___json2schema.html___. This helps users of the JSON editor to create a JSON schema, that defines the structure of desired JSON file.
+* added a `/docs` created a direct link to `json2schema.html`. This helps users of the JSON editor to create a JSON schema, that defines the structure of desired JSON file.
 * the JSON2Schema converter can be populated remotely with a HTML form (see [doc4json2schema.html](https://niebert.github.io/json-editor/doc4json2schema.html))
 * added a reference to this tool in [JSON-Editor Wiki](https://github.com/jdorn/json-editor/wiki/JSON2Schema) of Jeremy Dorn
 
@@ -22,7 +68,7 @@ The JSON to Schema generator is stored in ___docs/___ directory of this reposito
 * https://niebert.github.io/ClassEditorUML - JavaScriptClassEditor based on JSON-Editor with ACE-Editor and Syntax highlighting - [GitHub-Repository](https://www.github.com/niebert/)
 
 ### Resources for the Fork
-* ___json2schema.html___ was inspired by [https://www.jsonschema.net](https://www.jsonschema.net/#/editor) to generate a schema from a given JSON.
+* `json2schema.html` was inspired by [https://www.jsonschema.net](https://www.jsonschema.net/#/editor) to generate a schema from a given JSON.
 * [json-editor](https://github.com/jdorn/json-editor) by Jeremy Dorn,
 * [json-editor](https://github.com/mehmetb/json-editor) for hidden element support in the JSON Editor by Mehmet Baker (see [alteration by Mehmet Baker](https://github.com/jdorn/json-editor/pull/749/files)),
 
