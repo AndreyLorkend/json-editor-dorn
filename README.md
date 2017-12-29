@@ -1,10 +1,10 @@
 JSON Editor with JSON2Schema Generator
 ===========
-
+## JSON Editor
 ### JSON2Schema Generator
 The JSON to Schema generator is stored in `docs/` directory of this repository, so that it is available as online service for testing the HTML file [json2schema.html](https://niebert.github.io/json-editor/doc4json2schema.html). JSON2Schema uses the [Editor ACE](https://ace.c9.io/) for the JSON file and JSON Schema.
 
-### Table of Contents 
+### Table of Contents
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -49,6 +49,7 @@ The JSON to Schema generator is stored in `docs/` directory of this repository, 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ### Changes in Fork:
+* Remove depenendies from Grunt - had some issues. Not necessary anymore. Just browserify `src/jsoneditor.js` and the other modules in `src`. The generated source library is `/dist/jsoneditor.js`. UglifyJS compresses the code into file `/dist/jsoneditor.min.js`
 * uses `doctoc README.md` to create a table of contents for the README. Assumes `doctoc` to be install globally with `npm install doctoc -g`
 * grunt install seems to have some issues. Temporary workaround `build.sh` for Linux and MacOSX. It concats the code
 * ACE does not seem to support syntax highlighting in a WebApp due to "require"-call for the mode, fixed in `src/editors/string.js` in line 364 ff.
@@ -57,6 +58,34 @@ The JSON to Schema generator is stored in `docs/` directory of this repository, 
 * added a `/docs` created a direct link to `json2schema.html`. This helps users of the JSON editor to create a JSON schema, that defines the structure of desired JSON file.
 * the JSON2Schema converter can be populated remotely with a HTML form (see [doc4json2schema.html](https://niebert.github.io/json-editor/doc4json2schema.html))
 * added a reference to this tool in [JSON-Editor Wiki](https://github.com/jdorn/json-editor/wiki/JSON2Schema) of Jeremy Dorn
+
+## Installation
+
+### Migration from  build process
+The build process is updated due to issues with Grunt introduced by Jeremy Dorn. The previous approach was just a concatenation of javascript code in the `src/` directory. This approach is replicated by using the `build.js` script which can be executed with NodeJS by `node ./build.js`. It generates as usual the `dist/jsoneditor.js` script. That can be used in a browser to run the JSON-Editor (e.g. by [Markers4Map](https://niebert.github.io/Markers4Map)). Compression of code can be performed with UglifyJS and
+`uglifyjs dist/jsoneditor.js -o dist/jsoneditor.min.js` 
+
+### Package Installation of Browserify and Watchify - Alternative
+If your prefer that  browserify and watchify is installed with your `npm install` command, save these to modules to your dev-dependecies in your `package.json` by calling
+
+* (Install Browsersify) `npm install browserify --save-dev`
+* (Install Watchify) `npm install watchify --save-dev`
+* (Install UglifyJS) `npm install uglify-js --save-dev`
+* (Install DocToc) `npm install doctoc --save-dev`
+
+The difference between `--save` and `--save-dev` is, that development dependencies are installed with `npm install` because they are required for the development process of the code but they are not added to the generated Javascript-bundle that are used in the WebApp ClassEditorUML. The `--save-dev` commands for `browserify` and `watchify` will install the two modules with all the the dependencies in `node_modules` and add the dev-dependencies to your `package.json`.
+```json
+"devDependencies": {
+  "browserify": "^14.5.0",
+  "watchify": "^3.9.0",
+  "uglify-js": "^2.6.2",
+  "doctoc":"^1.3.0"
+}
+```
+In the current repository `Browserfy` and `Watchify` are expected to be installed globally, because the `package.json` does not contain the dev-dependencies mentioned above.
+
+### Start Watching the Files with Watchify
+Watchify will trigger the `npm run build` process if files were change due to alteration of code. To start watching the files, run the npm-watch script by `npm run watch`, which is defined in `package.json`
 
 ### JSON Editor used in the following WebApp
 * https://niebert.github.io/Markers4Map - Place Markers on OpenLayers-Map - [GitHub-Repository](https://www.github.com/niebert/Markers4Map)
@@ -67,6 +96,7 @@ The JSON to Schema generator is stored in `docs/` directory of this repository, 
 * https://niebert.github.io/JavascriptClassCreator - Prototype of JavascriptClass Editor that used partially JSON Editor - needs refactoring - leverage full potential of JSON-Editor for it - [GitHub-Repository](https://www.github.com/niebert/JavascriptClassCreator)
 * https://niebert.github.io/ClassEditorUML - JavaScriptClassEditor based on JSON-Editor with ACE-Editor and Syntax highlighting - [GitHub-Repository](https://www.github.com/niebert/)
 
+## Documentation
 ### Resources for the Fork
 * `json2schema.html` was inspired by [https://www.jsonschema.net](https://www.jsonschema.net/#/editor) to generate a schema from a given JSON.
 * [json-editor](https://github.com/jdorn/json-editor) by Jeremy Dorn,

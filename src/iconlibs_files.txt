@@ -1,7 +1,0 @@
-src/iconlibs/bootstrap2.js
-src/iconlibs/bootstrap3.js
-src/iconlibs/fontawesome3.js
-src/iconlibs/fontawesome4.js
-src/iconlibs/foundation2.js
-src/iconlibs/foundation3.js
-src/iconlibs/jqueryui.js

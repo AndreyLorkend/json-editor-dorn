@@ -418,6 +418,7 @@ JSONEditor.defaults.editors.string = JSONEditor.AbstractEditor.extend({
             'yaml'
           ].indexOf(this.format) >= 0
         ) {
+          console.log("Mode ACE Editor: '"+mode+"'");        
           this.ace_editor.session.setMode('ace/mode/'+mode);
         };
         // Listen for changes
