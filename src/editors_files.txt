@@ -1,0 +1,16 @@
+src/editors/array.js
+src/editors/base64.js
+src/editors/checkbox.js
+src/editors/enum.js
+src/editors/hidden.js
+src/editors/integer.js
+src/editors/multiple.js
+src/editors/multiselect.js
+src/editors/null.js
+src/editors/number.js
+src/editors/object.js
+src/editors/select.js
+src/editors/selectize.js
+src/editors/string.js
+src/editors/table.js
+src/editors/upload.js
