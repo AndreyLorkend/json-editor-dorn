@@ -1,10 +1,13 @@
 JSON Editor with JSON2Schema Generator
 ===========
 ## JSON Editor
+This JSON editor is a fork of the repository developed by Jeremy Dorn. The editor is defined by a JSON Schema stored in the folder `docs/schema`. In addition to the original repository from Jeremy Dorn this repository contains a [JSON2Schema Generator](https://niebert.github.io/json-editor/doc4json2schema.html), that allows to generate the JSON schema from a given JSON file.
+
 ### JSON2Schema Generator
 The JSON to Schema generator is stored in `docs/` directory of this repository, so that it is available as online service for testing the HTML file [json2schema.html](https://niebert.github.io/json-editor/doc4json2schema.html). JSON2Schema uses the [Editor ACE](https://ace.c9.io/) for the JSON file and JSON Schema.
 
-### Table of Contents
+
+## Table of Contents
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -59,11 +62,16 @@ The JSON to Schema generator is stored in `docs/` directory of this repository, 
 * the JSON2Schema converter can be populated remotely with a HTML form (see [doc4json2schema.html](https://niebert.github.io/json-editor/doc4json2schema.html))
 * added a reference to this tool in [JSON-Editor Wiki](https://github.com/jdorn/json-editor/wiki/JSON2Schema) of Jeremy Dorn
 
+### Next steps/ToDo
+* Extend the class `JSONEditor` in `json-editor.js` to the new class `JSONEditorFS` in `json-editor-fs.js` for export and import of JSON file by user interaction from local file system. Create the NPM package `json-editor-fs`.
+* Inherit a JS class from `JSONEditorJS` that handles large array as JSON file. Large arrays (e.g. 10000 records) cannot be handled by the original JSON editor. With this NPM package large arrays can be handled because the original JSON editor is applied on a single record in the array. Create a NPM package `json-editor-array`.
+
+
 ## Installation
 
 ### Migration from  build process
 The build process is updated due to issues with Grunt introduced by Jeremy Dorn. The previous approach was just a concatenation of javascript code in the `src/` directory. This approach is replicated by using the `build.js` script which can be executed with NodeJS by `node ./build.js`. It generates as usual the `dist/jsoneditor.js` script. That can be used in a browser to run the JSON-Editor (e.g. by [Markers4Map](https://niebert.github.io/Markers4Map)). Compression of code can be performed with UglifyJS and
-`uglifyjs dist/jsoneditor.js -o dist/jsoneditor.min.js` 
+`uglifyjs dist/jsoneditor.js -o dist/jsoneditor.min.js`
 
 ### Package Installation of Browserify and Watchify - Alternative
 If your prefer that  browserify and watchify is installed with your `npm install` command, save these to modules to your dev-dependecies in your `package.json` by calling

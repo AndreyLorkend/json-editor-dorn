@@ -1,20 +1,19 @@
 {
-  "name": "json-editor",
-  "title": "JSONEditor",
+  "name": "json-editor-fs",
+  "title": "JSONEditorFS",
   "description": "JSON Schema based editor",
   "version": "0.7.28",
   "main": "dist/jsoneditor.js",
   "author": {
-    "name": "Jeremy Dorn",
-    "email": "jeremy@jeremydorn.com",
-    "url": "http://jeremydorn.com"
+    "name": "Jeremy Dorn - forked by Engelbert Niehaus",
+    "url": "http://niebert.github.io/json-editor"
   },
   "bugs": {
-    "url": "https://github.com/jdorn/json-editor/issues"
+    "url": "https://github.com/niebert/json-editor/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jdorn/json-editor.git"
+    "url": "https://github.com/niebert/json-editor.git"
   },
   "keywords": [
     "json",
@@ -36,7 +35,7 @@
   "scripts": {
     "compress": "node ./build.js && uglifyjs dist/jsoneditor.js --source-map -mc -o dist/jsoneditor.min.js",
     "build": "node ./build.js",
-    "watch": "watchify src/jsoneditor.js -o dist/jsoneditor2.js && uglifyjs dist/jsoneditor2.js -mc warnings=false > dist/jsoneditor2.min.js",
+    "watch": "node ./build.js && watchify src/jsoneditor.js -o dist/jsoneditor.js && uglifyjs dist/jsoneditor.js -mc warnings=false > dist/jsoneditor.min.js",
     "doc": "doctoc README.md",
     "buildsh": "sh build.sh",
     "test": "browserify src/jsoneditor.js -o dist/test.js"
