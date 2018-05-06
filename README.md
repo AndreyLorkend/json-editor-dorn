@@ -4,8 +4,26 @@ JSON Editor with JSON2Schema Generator
 This JSON editor is a fork of the repository developed by Jeremy Dorn. The editor is defined by a JSON Schema stored in the folder `docs/schema`. In addition to the original repository from Jeremy Dorn this repository contains a [JSON2Schema Generator](https://niebert.github.io/json-editor/doc4json2schema.html), that allows to generate the JSON schema from a given JSON file.
 
 ### JSON2Schema Generator
+The JSON-Editor written by Jeremy Dorn needs a JSON Schema to define the required valid input for the JSON file processed with the editor. The tool ___json2schema.html___ runs entirely in the browser and creates a JSON schema.
+* You can start the JSON2Schema tool directly via [https://niebert.github.io/json-editor/plugins/json2schema.html](https://niebert.github.io/json-editor/plugins/json2schema.html) or
+*  you can populate the JSON input via a [HTML form submission](https://niebert.github.io/json-editor/doc4json2schema.html) with the following HTML code in your website.
+```html
+<form action="https://niebert.github.io/json-editor/plugins/json2schema.html"
+      method="get" target="_blank">
+  <textarea name="jsoninput" rows="5" cols="85">
+     {
+        "name":"John Miller",
+        "color":"#3412AB",
+        "age": 35,
+        "male": true
+     }
+  </textarea>
+  <br>
+  <input type="submit">
+</form>
+```
 The JSON to Schema generator is stored in `docs/` directory of this repository, so that it is available as online service for testing the HTML file [json2schema.html](https://niebert.github.io/json-editor/doc4json2schema.html). JSON2Schema uses the [Editor ACE](https://ace.c9.io/) for the JSON file and JSON Schema.
-
+ 
 
 ## Table of Contents
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -80,6 +98,7 @@ If your prefer that  browserify and watchify is installed with your `npm install
 * (Install Watchify) `npm install watchify --save-dev`
 * (Install UglifyJS) `npm install uglify-js --save-dev`
 * (Install DocToc) `npm install doctoc --save-dev`
+* (Install JSHint) `npm install jshint --save-dev`
 
 The difference between `--save` and `--save-dev` is, that development dependencies are installed with `npm install` because they are required for the development process of the code but they are not added to the generated Javascript-bundle that are used in the WebApp ClassEditorUML. The `--save-dev` commands for `browserify` and `watchify` will install the two modules with all the the dependencies in `node_modules` and add the dev-dependencies to your `package.json`.
 ```json
@@ -87,7 +106,8 @@ The difference between `--save` and `--save-dev` is, that development dependenci
   "browserify": "^14.5.0",
   "watchify": "^3.9.0",
   "uglify-js": "^2.6.2",
-  "doctoc":"^1.3.0"
+  "doctoc":"^1.3.0",
+  "jshint":"^2.9.5"
 }
 ```
 In the current repository `Browserfy` and `Watchify` are expected to be installed globally, because the `package.json` does not contain the dev-dependencies mentioned above.

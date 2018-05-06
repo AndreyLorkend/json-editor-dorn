@@ -20,7 +20,22 @@ function getSchema4JSON(pJSON) {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "additionalProperties": true,
     "title":"MyJSON",
-    "definitions": {}
+    "definitions": {
+      "comment": {
+          "title": "Comment:",
+          "type": "string",
+          "format": "textarea",
+          "default": ""
+      },
+      "yesno":{
+        "default": "yes",
+        "type": "string",
+        "enum": [
+            "yes",
+            "no"
+        ]
+      }
+    }
   };
   var vTypeTree = getTypeTree4JSON(pJSON);
   // vEditorPath is the path to a specific JSON element in the JSON file
@@ -103,11 +118,26 @@ function convertJSON2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath) {
   switch (vType) {
     //---- OBJECT/HASH -------
     case "object":
+      pSchema["title"] = "Title of '"+pEditorPath+"' Type: '"+vType+"'";
+      pSchema["options"] = {
+          "disable_collapse": false,
+          "disable_edit_json": false,
+          "disable_properties": false,
+          "hidden": false
+      };
       convertObject2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath);
     break;
     //---- ARRAY -------------
     case "array":
       pSchema["format"] = "tabs";
+      pSchema["options"] = {
+          "disable_collapse": false,
+          "disable_array_add": false,
+          "disable_array_delete": false,
+          "disable_array_reorder": false,
+          "disable_properties": false,
+          "hidden": false
+      };
       convertArray2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath);
     break;
     //---- STRING ------------
@@ -115,32 +145,47 @@ function convertJSON2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath) {
       pSchema["title"] = "Title of '"+pEditorPath+"' Type: '"+vType+"'";
       pSchema["default"] = pJSON; //"Default text of "+vType+" variable";
       pSchema["format"] = determineFormat4String(pJSON);
-      pSchema["description"] = "An explanation for '"+pEditorPath+"' about the purpose of "+vType+" instance with editor path '"+pEditorPath+"'.";
+      pSchema["description"] = "A description for '"+getID4Path(pPath)+"'  Type: '"+vType+"'";
+      pSchema["options"] = {
+          "hidden": false
+      };
     break;
     //---- NUMBER ------------
     case "number":
       pSchema["title"] = "Title of '"+pEditorPath+"' Type: '"+vType+"'";
       pSchema["default"] = pJSON;
-      pSchema["description"] = "An explanation for '"+getID4Path(pPath)+"' about the purpose of "+vType+" instance with editor path '"+pEditorPath+"'.";
+      pSchema["description"] = "A description for '"+getID4Path(pPath)+"'  Type: '"+vType+"'";
+      pSchema["options"] = {
+          "hidden": false
+      };
     break;
     //---- INTEGER ------------
     case "integer":
       pSchema["title"] = "Title of '"+pEditorPath+"' Type: '"+vType+"'";
       pSchema["default"] = pJSON;
-      pSchema["description"] = "An explanation for '"+getID4Path(pPath)+"' about the purpose of "+vType+" instance with editor path '"+pEditorPath+"'.";
+      pSchema["description"] = "A description for '"+getID4Path(pPath)+"'  Type: '"+vType+"'";
+      pSchema["options"] = {
+          "hidden": false
+      };
     break;
     //---- BOOLEAN ------------
     case "boolean":
       pSchema["title"] = "Title of '"+pEditorPath+"' Type: '"+vType+"'";
       pSchema["format"] = "checkbox";
       pSchema["default"] = pJSON;
-      pSchema["description"] = "An explanation for '"+getID4Path(pPath)+"' about the purpose of "+vType+" instance with editor path '"+pEditorPath+"'.";
+      pSchema["description"] = "A description for '"+getID4Path(pPath)+"'  Type: '"+vType+"'";
+      pSchema["options"] = {
+          "hidden": false
+      };
     break;
     default:
       pSchema["title"] = "Title of '"+pEditorPath+"' Type: '"+vType+"'";
       pSchema["default"] = null;
-      pSchema["description"] = "An explanation for '"+getID4Path(pPath)+"' about the purpose of "+vType+" instance with editor path '"+pEditorPath+"'.";
-  };
+      pSchema["description"] = "A description for '"+getID4Path(pPath)+"'  Type: '"+vType+"'";
+      pSchema["options"] = {
+          "hidden": false
+      };
+    };
 };
 
 function convertObject2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath) {

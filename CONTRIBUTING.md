@@ -1,3 +1,7 @@
+
+## Contributing
+This document briefly lists the guidelines for contributing to JSON Editor.
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
@@ -10,12 +14,8 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-Contributing
-===============
-This document briefly lists the guidelines for contributing to JSON Editor.
+## Reporting Bugs
 
-Reporting Bugs
-----------------
 When creating an issue in GitHub, try to include when feasible:
 *  A brief description of the issue
 *  An example JSON schema that causes the issue
@@ -24,30 +24,34 @@ When creating an issue in GitHub, try to include when feasible:
 If you can reproduce the issue on the demo page (http://jeremydorn.com/json-editor/), it's helpful to attach the "Direct Link" url (top right of page).  Note: the direct link might not work for very large schemas or JSON values.
 
 
-Contributing Code
---------------------------
+## Contributing Code
 One of the major goals of JSON Editor is to be easy to modify and hack.
 
 If you fix a bug or add a cool feature, please submit a pull request!
 
 
-### Code Style
+## Code Style
 
 *  Use 2 spaces for indentation
 *  Use comments whenever the code's meaning is not obvious
 *  When in doubt, try to match the style in existing source files
 
-###Grunt
+## Browserify/Watchify
 
-The easiest way to hack on JSON Editor is to run `grunt watch`, which 
+The easiest way to hack on JSON Editor is to run `npm run watch`, which
 re-builds `dist/jsoneditor.js` every time a source file changes.
 
-To do a full grunt build which includes jshint and minification, run `grunt`.
+* To run just a new build call `npm run build`.
+* If you want to automize this process after code alteration
+* To test the quality of your Javascript code, call `npm run test` to run `jshint` on library.
+* To minify/compress the source code run `npm run compress` which also runs a build by `node build.js`.
 
-### Submitting Pull Requests
+To do a full build which includes `jshint` run `npm run test`.
+
+## Submitting Pull Requests
 Try to limit pull requests to a single narrow feature or bug fix.
 
-__Do not submit `dist/` files!__ 
+__Do not submit `dist/` files!__
 
 The following is done when a pull request is accepted.  There is no need to do any of these steps yourself.
 
