@@ -193,6 +193,8 @@ function convertObject2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath) {
   pSchema["defaultProperties"] = [];
   // properties contains one schema for every key
   pSchema["properties"] = {};
+  var order_index = 10;
+  var order_increment = 10;
   for (var key in pJSON) {
     if (pJSON.hasOwnProperty(key)) {
       // set the key as required property in object/hash
@@ -201,6 +203,8 @@ function convertObject2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath) {
       pSchema["properties"][key] = {};
       // now call convertJSON2Schema() on sub-structure of JSON
       convertJSON2Schema(pJSON[key],pPath+"/properties/"+key,pSchema["properties"][key],pTypeTree[key],pEditorPath+"."+key);
+      pSchema["properties"][key]["propertyOrder"] = order_index;
+      order_index += order_increment;      
     };
   };
 };
