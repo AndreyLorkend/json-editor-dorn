@@ -64,6 +64,9 @@
       </h4>
     </div>
     <hr>
+    <h3>Schema Title</h3>
+    <b>Title:</b> <input type="text" id="tTitleSchema" value="My Schema Title">
+    <hr>
     <h3>JSON Input</h3>
     <textarea id="jsoninput" rows="5" cols="20" style="display:none">
 {
@@ -71,7 +74,11 @@
    "book": "A green door",
    "authors": [
      "Mary Myers",
-     "Bert Bond"
+     {
+       "name":"Bert Bond",
+       "age":65
+     }
+
    ],
    "prices": {
    	   "buy": 12.5,
@@ -98,7 +105,7 @@
       <iframe src="ace/ace.html?domid=jsoninput&mode=json" id="iACEinput" width="90%" height="150px"></iframe>
     </div>
     <p id="pConverter">
-      <button id='bCreateSchema' onclick="onClickSchema4JSON('iACEinput','iACEoutput')">Create JSON Schema</button>
+      <button id='bCreateSchema' onclick="onClickSchema4JSON('iACEinput','iACEoutput','tTitleSchema')">Create JSON Schema</button>
       <button id='bExportJSON' onclick="saveFile2HDD('myjson.json',getEditorValue('iACEinput'))">Export JSON</button>
     </p>
     <div id="pSchemaOutput" style="display:none">
