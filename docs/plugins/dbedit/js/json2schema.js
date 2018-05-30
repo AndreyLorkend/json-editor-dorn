@@ -7,6 +7,7 @@ function onClickSchema4JSON(pInputID,pOutputID,pTitleID) {
   if (vJSON) {
     var vSchema = getSchema4JSON(vJSON,vRootTitle);
     vSchema["title"] = vRootTitle;
+    vSchema.options.collapsed = false;
     var vStringSchema = JSON.stringify(vSchema,null,4);
     //write2value(pOutputID,vStringSchema);
     setEditorValue(pOutputID,vStringSchema);
@@ -66,7 +67,7 @@ function getTypeTree4JSON(pJSON) {
 
 function toUpperCase1Char(pString) {
   // converts first character to uppercase.
-  var vString = pString || "undefined_string";
+  var vString = pString || "";
   if (vString.indexOf("/")>=0) {
     vString = vString.slice(vString.lastIndexOf("/")+1);
   };
@@ -84,7 +85,7 @@ function getID4EditorPath(pPath) {
   return vID;
 }
 
-function getTitle4EditorPath(pPath,pRootTitle) {
+function getTitle4EditorPath(pPath,pType,pRootTitle) {
   var vTitle = getID4EditorPath(pPath);
   if (vTitle.length>0) {
     vTitle = var2title(vTitle);
@@ -98,6 +99,9 @@ function getTitle4EditorPath(pPath,pRootTitle) {
     if (pRootTitle) {
       vTitle = pRootTitle;
     };
+  };
+  if (vTitle.replace(/\s/g,"") == "") {
+    vTitle = "Title "+pPath;
   };
   vTitle = var2title(vTitle);
   return vTitle;
@@ -186,7 +190,7 @@ function getID4Path(pPath) {
 }
 
 function convertJSON2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath,pTitle) {
-  console.log("convertJSON2Schema('"+pPath+"') pTitle='"+pTitle+"'");
+  //console.log("convertJSON2Schema('"+pPath+"') pTitle='"+pTitle+"'");
   var vTitle = pTitle || "Default Schema Title";
   // pTypeTree is need for checking deep equal for "oneOf" definition in arrays
   var vType = getType4JSON(pJSON);
@@ -210,6 +214,7 @@ function convertJSON2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath,pTitle) {
           "disable_collapse": false,
           "disable_edit_json": false,
           "disable_properties": false,
+          "collapsed": true,
           "hidden": false
       };
       convertObject2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath);
@@ -224,9 +229,10 @@ function convertJSON2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath,pTitle) {
           "disable_array_delete": false,
           "disable_array_reorder": false,
           "disable_properties": false,
+          "collapsed": false,
           "hidden": false
       };
-      convertArray2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath);
+      convertArray2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath,pSchema["title"]);
     break;
     //---- STRING ------------
     case "string":
@@ -305,10 +311,11 @@ function convertObject2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath) {
   };
 };
 
-function convertArray2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath) {
+function convertArray2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath,pItemTitle) {
+  var vItemTitle = pItemTitle || "Record";
   var vID = "";
   pSchema["items"] = {};
-  pSchema["items"]["headerTemplate"] = "Record {{i1}}";
+  pSchema["items"]["headerTemplate"] = vItemTitle+" {{i1}}";
   var vItems = [];
   var vDefaults = [];
   for (var i = 0; i < pJSON.length; i++) {
@@ -337,7 +344,7 @@ function convertArray2Schema(pJSON,pPath,pSchema,pTypeTree,pEditorPath) {
   if (vItems.length > 1) {
     for (var i = 0; i < vItems.length; i++) {
       vItems[i]["id"] = pPath+"/oneof"+i;
-      vItems[i]["title"] = "Title array"+i+" "+pPath;
+      vItems[i]["title"] = "oneof "+i+" "+pPath;
     };
     pSchema["items"]["oneOf"] = vItems;
   } else {
