@@ -5,8 +5,8 @@ This JSON editor is a fork of the repository developed by Jeremy Dorn. The edito
 
 ### JSON2Schema Generator
 The JSON-Editor written by Jeremy Dorn needs a JSON Schema to define the required valid input for the JSON file processed with the editor. The tool ___json2schema.html___ runs entirely in the browser and creates a JSON schema.
-* You can start the JSON2Schema tool directly via [https://niebert.github.io/json-editor/plugins/json2schema.html](https://niebert.github.io/json-editor/plugins/json2schema.html) or
-*  you can populate the JSON input via a [HTML form submission](https://niebert.github.io/json-editor/doc4json2schema.html) with the following HTML code in your website.
+* You can start the JSON2Schema tool directly via [https://niebert.github.io/JSON2Schema](https://niebert.github.io/JSON2Schema/index.html) or
+*  you can populate the JSON input via a [HTML form submission](https://niebert.github.io/json-editor-dorn/doc4json2schema.html) with the following HTML code in your website.
 ```html
 <form action="https://niebert.github.io/json-editor/plugins/json2schema.html"
       method="get" target="_blank">
@@ -23,7 +23,7 @@ The JSON-Editor written by Jeremy Dorn needs a JSON Schema to define the require
 </form>
 ```
 The JSON to Schema generator is stored in `docs/` directory of this repository, so that it is available as online service for testing the HTML file [json2schema.html](https://niebert.github.io/json-editor/doc4json2schema.html). JSON2Schema uses the [Editor ACE](https://ace.c9.io/) for the JSON file and JSON Schema.
- 
+
 
 ## Table of Contents
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
