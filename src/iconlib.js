@@ -11,15 +11,16 @@ JSONEditor.AbstractIconLib = Class.extend({
     movedown: ''
   },
   icon_prefix: '',
+
   getIconClass: function(key) {
     if(this.mapping[key]) return this.icon_prefix+this.mapping[key];
     else return null;
   },
   getIcon: function(key) {
     var iconclass = this.getIconClass(key);
-    
+
     if(!iconclass) return null;
-    
+
     var i = document.createElement('i');
     i.className = iconclass;
     return i;

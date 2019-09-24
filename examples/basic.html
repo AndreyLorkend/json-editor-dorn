@@ -7,10 +7,11 @@
   </head>
   <body>
     <h1>Basic JSON Editor Example</h1>
-    
+
     <div id='editor_holder'></div>
     <button id='submit'>Submit (console.log)</button>
-    
+    <button id='bInnerHTML'>InnerHTML (console.log)</button>
+
     <script>
       // Initialize the editor with a JSON schema
       var editor = new JSONEditor(document.getElementById('editor_holder'),{
@@ -45,11 +46,15 @@
           }
         }
       });
-      
+
       // Hook up the submit button to log to the console
       document.getElementById('submit').addEventListener('click',function() {
         // Get the value from the editor
         console.log(editor.getValue());
+      });
+      document.getElementById('bInnerHTML').addEventListener('click',function() {
+        // Get the value from the editor
+        console.log(document.getElementById('editor_holder').innerHTML);
       });
     </script>
   </body>

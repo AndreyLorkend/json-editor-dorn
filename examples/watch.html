@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Watch EnumSource JSON Editor Example</title>
+    <script src="../dist/jsoneditor.js"></script>
+  </head>
+  <body>
+    <h1>Watch enumSource JSON Editor Example</h1>
+
+    <div id='editor_holder'></div>
+    <button id='submit'>Submit (console.log)</button>
+    <button id='bInnerHTML'>InnerHTML (console.log)</button>
+
+    <script>
+      // Initialize the editor with a JSON schema
+      var vProgLanguage = "Perl";
+      var editor = new JSONEditor(document.getElementById('editor_holder'),{
+        schema: {
+          type: "object",
+          title: "Watch Example",
+          properties: {
+            "myclass": {
+              "title": "My Class with Dynamic Watch",
+              "type": "string",
+              "propertyOrder": 1,
+        	  "watch":{
+              	"dynclasses": "localclasslist",
+              	"dynremote": "remoteclasslist",
+              	"dynbaseclasses": "baseclasses"
+              },
+              "enumSource": [
+              	"dynclasses",
+              	"dynremote",
+              	{
+        			"source": "dynbaseclasses",
+        			"value": "{{item.name}}"
+      			}	
+      		  ]		
+            },
+            "classlist": {
+                    "type": "array",
+                    //"id": "/properties/settings/properties/classlist",
+                    "title": "Select List of Classes",
+                    "format": "table",
+                    "propertyOrder": 20,
+        						"options": {
+                      "collapsed": true,
+                      "hidden": true
+                    },
+                    "items": {
+                        "type": "string",
+                        "id": "/properties/settings/properties/classlist/items",
+                        "title": "Class",
+                        "default": "",
+                        "format": "text"
+                    },
+                    "default": [
+                        "",
+                        "Array",
+                        "Boolean",
+                        "Document",
+                        "Float",
+                        "Function",
+                        "Hash",
+                        "Integer",
+                        "Object",
+                        "RegularExp",
+                        "String"
+                      ],
+                },
+            "localclasslist": {
+                    "type": "array",
+                    "id": "/properties/settings/properties/localclasslist",
+                    "title": "Local List of Classes",
+                    "description":"A local class is a module required from local repository. The path name defined in the 'Repository Info' is used as prefix to require those local definition of classes.",
+                    "format": "table",
+                    "propertyOrder": 30,
+        						"options": {
+                      "collapsed": true
+                    },
+                    "items": {
+                        "type": "string",
+                        "id": "/properties/settings/properties/localclasslist/items",
+                        "title": "Class",
+                        "default": "App",
+                        "format": "text"
+                    },
+                    "default": [
+                        "App",
+                        "AppAbstract"
+                    ],
+                },
+            "remoteclasslist": {
+                    "type": "array",
+                    "id": "/properties/settings/properties/remoteclasslist",
+                    "title": "Remote List of Classes",
+                    "format": "table",
+                    "propertyOrder": 40,
+        						"options": {
+                      "collapsed": true
+                    },
+                    "description":"A remote class is a module required from a package manager like NPM.",
+                    "items": {
+                        "type": "string",
+                        "id": "/properties/settings/properties/remoteclasslist/items",
+                        "title": "Remote Class",
+                        "default": "LinkParam",
+                        "format": "text"
+                    },
+                    "default": [
+                        "LinkParam",
+                        "JSONEditor"
+                    ],
+                },
+            "baseclasslist": {
+                    "type": "array",
+                    "id": "/properties/settings/properties/baseclasslist",
+                    "title": "List of Base Classes - Watch Auto Update",
+                    "format": "table",
+                    "propertyOrder": 50,
+        						"options": {
+                      "collapsed": true
+                    },
+                    "description":"A base class is provide by the programming language '"+vProgLanguage+"' itself, so using these classes in a module does not imply that the special module must be required locally of from a package manager.",
+                    "items": {
+                        "type": "string",
+                        "id": "/properties/settings/properties/baseclasslist/items",
+                        "title": "Base Class List",
+                        "default": "",
+                        "format": "text"
+                    }
+                },
+            "baseclasses": {
+                    "type": "array",
+                    "id": "/properties/settings/properties/baseclasses",
+                    "title": "List of Base Classes",
+                    "format": "table",
+                    "propertyOrder": 60,
+        						"options": {
+                      "collapsed": true
+                    },
+                    "description":"A base class is provide by the programming language '"+vProgLanguage+"' itself, so using these classes in a module does not imply that the special module must be required locally of from a package manager.",
+                    "items": {
+                        "type": "object",
+                        "id": "/properties/settings/properties/baseclasses/items",
+                        "title": "Base Class",
+                        "headerTemplate": "{{self.name}}()",
+                        "defaultProperties": [
+                            "name",
+                            "initvalue"
+                        ],
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "id": "/properties/settings/properties/baseclasses/items/properties/name",
+                                "title": "Base Class Name",
+                                "default": "",
+                                "propertyOrder": 10,
+                    						"format": "text"
+                            },
+                            "initvalue": {
+                                "type": "string",
+                                "id": "/properties/settings/properties/baseclasses/items/properties/initvalue",
+                                "title": "Init Value",
+                                "default": "",
+                                "propertyOrder": 20,
+                                "format": "text"
+                            }
+                        }
+                    }
+                }
+        
+		  }
+        }
+      });
+
+      // Hook up the submit button to log to the console
+      document.getElementById('submit').addEventListener('click',function() {
+        // Get the value from the editor
+        console.log(editor.getValue());
+      });
+      document.getElementById('bInnerHTML').addEventListener('click',function() {
+        // Get the value from the editor
+        console.log(document.getElementById('editor_holder').innerHTML);
+      });
+    </script>
+  </body>
+</html>

@@ -1,14 +1,14 @@
 JSON Editor with JSON2Schema Generator
 ===========
 ## JSON Editor
-This JSON editor is a fork of the repository developed by Jeremy Dorn. The editor is defined by a JSON Schema stored in the folder `docs/schema`. In addition to the original repository from Jeremy Dorn this repository contains a [JSON2Schema Generator](https://niebert.github.io/json-editor/doc4json2schema.html), that allows to generate the JSON schema from a given JSON file.
+This JSON editor is a fork of the repository developed by Jeremy Dorn. The editor is defined by a JSON Schema stored in the folder `docs/schema`. In addition to the original repository from Jeremy Dorn this repository contains a [JSON2Schema Generator](https://niebert.github.io/JSON2Schema), that allows to generate the JSON schema from a given JSON file.
 
 ### JSON2Schema Generator
 The JSON-Editor written by Jeremy Dorn needs a JSON Schema to define the required valid input for the JSON file processed with the editor. The tool ___json2schema.html___ runs entirely in the browser and creates a JSON schema.
 * You can start the JSON2Schema tool directly via [https://niebert.github.io/JSON2Schema](https://niebert.github.io/JSON2Schema/index.html) or
 *  you can populate the JSON input via a [HTML form submission](https://niebert.github.io/json-editor-dorn/doc4json2schema.html) with the following HTML code in your website.
 ```html
-<form action="https://niebert.github.io/json-editor/plugins/json2schema.html"
+<form action="https://niebert.github.io/JSON2Schema/index.html"
       method="get" target="_blank">
   <textarea name="jsoninput" rows="5" cols="85">
      {

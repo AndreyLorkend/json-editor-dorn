@@ -5,6 +5,7 @@
     <title>Advanced JSON Editor Example</title>
 
     <script src="../dist/jsoneditor.js"></script>
+    <script src="../docs/js/filesaver.js"></script>
   </head>
   <body>
     <h1>Advanced JSON Editor Example</h1>
@@ -21,11 +22,18 @@
     <button id='submit'>Submit (console.log)</button>
     <button id='restore'>Restore to Default</button>
     <button id='enable_disable'>Disable/Enable Form</button>
+    <button id='bInnerHTML'>InnerHTML (console.log)</button>
     <span id='valid_indicator'></span>
 
     <div id='editor_holder'></div>
 
     <script>
+
+      function saveFile2HDD(pFilename,pContent) {
+        var file = new File([pContent], {type: "text/plain;charset=utf-8"});
+        saveAs(file,pFilename);
+      }
+
       // This is the starting value for the editor
       // We will use this to seed the initial editor
       // and to provide a "Restore to Default" button.
@@ -112,7 +120,10 @@
           editor.disable();
         }
       });
-
+      document.getElementById('bInnerHTML').addEventListener('click',function() {
+        // Get the value from the editor
+        saveFile2HDD("advanced_innerhtml.html",document.getElementById('editor_holder').innerHTML);
+      });
       // Hook up the validation indicator to update its
       // status whenever the editor changes
       editor.on('change',function() {
