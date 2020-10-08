@@ -3,6 +3,9 @@ JSON Editor with JSON2Schema Generator
 ## JSON Editor
 This JSON editor is a fork of the repository developed by Jeremy Dorn. The editor is defined by a JSON Schema stored in the folder `docs/schema`. In addition to the original repository from Jeremy Dorn this repository contains a [JSON2Schema Generator](https://niebert.github.io/JSON2Schema), that allows to generate the JSON schema from a given JSON file.
 
+## JSON Editor with Hamburger Menu
+If you want to use a [JSON Editor](dist/jsoneditor.js) with [Hamburger Menu](https://niebert.github.io/hamburger_menu_app) you can download and fork the [`jsoneditor_app`](https://niebert.github.io/jsoneditor_app).
+
 ### JSON2Schema Generator
 The JSON-Editor written by Jeremy Dorn needs a JSON Schema to define the required valid input for the JSON file processed with the editor. The tool ___json2schema.html___ runs entirely in the browser and creates a JSON schema.
 * You can start the JSON2Schema tool directly via [https://niebert.github.io/JSON2Schema](https://niebert.github.io/JSON2Schema/index.html) or
