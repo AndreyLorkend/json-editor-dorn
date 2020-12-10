@@ -1,8 +1,8 @@
-/*! JSON Editor v0.8.0 - JSON Schema -> HTML Editor
+/*! JSON Editor v0.7.28 - JSON Schema -> HTML Editor
  * By Jeremy Dorn - https://github.com/jdorn/json-editor/
  * Released under the MIT license
  *
- * Date: 2020-12-07
+ * Date: 2016-08-07
  */
 
 /**
@@ -10,6 +10,7 @@
  */
 
 (function() {
+
 /*jshint loopfunc: true */
 /* Simple JavaScript Inheritance
  * By John Resig http://ejohn.org/
@@ -19,20 +20,20 @@
 var Class;
 (function(){
   var initializing = false, fnTest = /xyz/.test(function(){window.postMessage("xyz");}) ? /\b_super\b/ : /.*/;
- 
+
   // The base Class implementation (does nothing)
   Class = function(){};
- 
+
   // Create a new Class that inherits from this class
   Class.extend = function extend(prop) {
     var _super = this.prototype;
-   
+
     // Instantiate a base class (but only create the instance,
     // don't run the init constructor)
     initializing = true;
     var prototype = new this();
     initializing = false;
-   
+
     // Copy the properties over onto the new prototype
     for (var name in prop) {
       // Check if we're overwriting an existing function
@@ -41,43 +42,44 @@ var Class;
         (function(name, fn){
           return function() {
             var tmp = this._super;
-           
+
             // Add a new ._super() method that is the same method
             // but on the super-class
             this._super = _super[name];
-           
+
             // The method only need to be bound temporarily, so we
             // remove it when we're done executing
-            var ret = fn.apply(this, arguments);        
+            var ret = fn.apply(this, arguments);
             this._super = tmp;
-           
+
             return ret;
           };
         })(name, prop[name]) :
         prop[name];
     }
-   
+
     // The dummy class constructor
     function Class() {
       // All construction is actually done in the init method
       if ( !initializing && this.init )
         this.init.apply(this, arguments);
     }
-   
+
     // Populate our constructed prototype object
     Class.prototype = prototype;
-   
+
     // Enforce the constructor to be what we expect
     Class.prototype.constructor = Class;
- 
+
     // And make this class extendable
     Class.extend = extend;
-   
+
     return Class;
   };
-  
+
   return Class;
 })();
+
 // CustomEvent constructor polyfill
 // From MDN
 (function () {
@@ -100,20 +102,20 @@ var Class;
     var vendors = ['ms', 'moz', 'webkit', 'o'];
     for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
         window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || 
+        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] ||
                                       window[vendors[x]+'CancelRequestAnimationFrame'];
     }
- 
+
     if (!window.requestAnimationFrame)
         window.requestAnimationFrame = function(callback, element) {
             var currTime = new Date().getTime();
             var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-            var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
               timeToCall);
             lastTime = currTime + timeToCall;
             return id;
         };
- 
+
     if (!window.cancelAnimationFrame)
         window.cancelAnimationFrame = function(id) {
             clearTimeout(id);
@@ -128,7 +130,8 @@ var Class;
 		return Object.prototype.toString.call(arg) === '[object Array]';
 	  };
 	}
-}());/**
+}());
+/**
  * Taken from jQuery 2.1.3
  *
  * @param obj
@@ -207,6 +210,7 @@ var $triggerc = function(el,event) {
 
   el.dispatchEvent(e);
 };
+
 var JSONEditor = function(element,options) {
   if (!(element instanceof Element)) {
     throw new Error('element should be an instance of Element');
@@ -222,38 +226,38 @@ JSONEditor.prototype = {
   constructor: JSONEditor,
   init: function() {
     var self = this;
-    
+
     this.ready = false;
 
     var theme_class = JSONEditor.defaults.themes[this.options.theme || JSONEditor.defaults.theme];
     if(!theme_class) throw "Unknown theme " + (this.options.theme || JSONEditor.defaults.theme);
-    
+
     this.schema = this.options.schema;
     this.theme = new theme_class();
     this.template = this.options.template;
     this.refs = this.options.refs || {};
     this.uuid = 0;
     this.__data = {};
-    
+
     var icon_class = JSONEditor.defaults.iconlibs[this.options.iconlib || JSONEditor.defaults.iconlib];
     if(icon_class) this.iconlib = new icon_class();
 
     this.root_container = this.theme.getContainer();
     this.element.appendChild(this.root_container);
-    
+
     this.translate = this.options.translate || JSONEditor.defaults.translate;
 
     // Fetch all external refs via ajax
     this._loadExternalRefs(this.schema, function() {
       self._getDefinitions(self.schema);
-      
+
       // Validator options
       var validator_options = {};
       if(self.options.custom_validators) {
         validator_options.custom_validators = self.options.custom_validators;
       }
       self.validator = new JSONEditor.Validator(self,null,validator_options);
-      
+
       // Create the root editor
       var editor_class = self.getEditorClass(self.schema);
       self.root = self.createEditor(editor_class, {
@@ -262,7 +266,7 @@ JSONEditor.prototype = {
         required: true,
         container: self.root_container
       });
-      
+
       self.root.preBuild();
       self.root.build();
       self.root.postBuild();
@@ -297,7 +301,7 @@ JSONEditor.prototype = {
   },
   validate: function(value) {
     if(!this.ready) throw "JSON Editor not ready yet.  Listen for 'ready' event before validating";
-    
+
     // Custom value
     if(arguments.length === 1) {
       return this.validator.validate(value);
@@ -310,7 +314,7 @@ JSONEditor.prototype = {
   destroy: function() {
     if(this.destroyed) return;
     if(!this.ready) return;
-    
+
     this.schema = null;
     this.options = null;
     this.root.destroy();
@@ -324,14 +328,14 @@ JSONEditor.prototype = {
     this.__data = null;
     this.ready = false;
     this.element.innerHTML = '';
-    
+
     this.destroyed = true;
   },
   on: function(event, callback) {
     this.callbacks = this.callbacks || {};
     this.callbacks[event] = this.callbacks[event] || [];
     this.callbacks[event].push(callback);
-    
+
     return this;
   },
   off: function(event, callback) {
@@ -355,7 +359,7 @@ JSONEditor.prototype = {
     else {
       this.callbacks = {};
     }
-    
+
     return this;
   },
   trigger: function(event) {
@@ -364,7 +368,7 @@ JSONEditor.prototype = {
         this.callbacks[event][i]();
       }
     }
-    
+
     return this;
   },
   setOption: function(option, value) {
@@ -376,7 +380,7 @@ JSONEditor.prototype = {
     else {
       throw "Option "+option+" must be set during instantiation and cannot be changed later";
     }
-    
+
     return this;
   },
   getEditorClass: function(schema) {
@@ -405,30 +409,30 @@ JSONEditor.prototype = {
   },
   onChange: function() {
     if(!this.ready) return;
-    
+
     if(this.firing_change) return;
     this.firing_change = true;
-    
+
     var self = this;
-    
+
     window.requestAnimationFrame(function() {
       self.firing_change = false;
       if(!self.ready) return;
 
       // Validate and cache results
       self.validation_results = self.validator.validate(self.root.getValue());
-      
+
       if(self.options.show_errors !== "never") {
         self.root.showValidationErrors(self.validation_results);
       }
       else {
         self.root.showValidationErrors([]);
       }
-      
+
       // Fire change event
       self.trigger('change');
     });
-    
+
     return this;
   },
   compileTemplate: function(template, name) {
@@ -471,7 +475,7 @@ JSONEditor.prototype = {
     else {
       // No data stored
       if(!el.hasAttribute('data-jsoneditor-'+key)) return null;
-      
+
       return this.__data[el.getAttribute('data-jsoneditor-'+key)];
     }
   },
@@ -493,7 +497,7 @@ JSONEditor.prototype = {
     this.watchlist = this.watchlist || {};
     this.watchlist[path] = this.watchlist[path] || [];
     this.watchlist[path].push(callback);
-    
+
     return this;
   },
   unwatch: function(path,callback) {
@@ -503,7 +507,7 @@ JSONEditor.prototype = {
       this.watchlist[path] = null;
       return this;
     }
-    
+
     var newlist = [];
     for(var i=0; i<this.watchlist[path].length; i++) {
       if(this.watchlist[path][i] === callback) continue;
@@ -548,11 +552,11 @@ JSONEditor.prototype = {
         }
       }
     };
-    
+
     if(schema.$ref && typeof schema.$ref !== "object" && schema.$ref.substr(0,1) !== "#" && !this.refs[schema.$ref]) {
       refs[schema.$ref] = true;
     }
-    
+
     for(var i in schema) {
       if(!schema.hasOwnProperty(i)) continue;
       if(schema[i] && typeof schema[i] === "object" && Array.isArray(schema[i])) {
@@ -566,25 +570,25 @@ JSONEditor.prototype = {
         merge_refs(this._getExternalRefs(schema[i]));
       }
     }
-    
+
     return refs;
   },
   _loadExternalRefs: function(schema, callback) {
     var self = this;
     var refs = this._getExternalRefs(schema);
-    
+
     var done = 0, waiting = 0, callback_fired = false;
-    
+
     $each(refs,function(url) {
       if(self.refs[url]) return;
       if(!self.options.ajax) throw "Must set ajax option to true to load external ref "+url;
       self.refs[url] = 'loading';
       waiting++;
 
-      var r = new XMLHttpRequest(); 
+      var r = new XMLHttpRequest();
       r.open("GET", url, true);
       r.onreadystatechange = function () {
-        if (r.readyState != 4) return; 
+        if (r.readyState != 4) return;
         // Request succeeded
         if(r.status === 200) {
           var response;
@@ -596,7 +600,7 @@ JSONEditor.prototype = {
             throw "Failed to parse external ref "+url;
           }
           if(!response || typeof response !== "object") throw "External ref does not contain a valid schema - "+url;
-          
+
           self.refs[url] = response;
           self._loadExternalRefs(response,function() {
             done++;
@@ -614,20 +618,20 @@ JSONEditor.prototype = {
       };
       r.send();
     });
-    
+
     if(!waiting) {
       callback();
     }
   },
   expandRefs: function(schema) {
     schema = $extend({},schema);
-    
+
     while (schema.$ref) {
       var ref = schema.$ref;
       delete schema.$ref;
-      
+
       if(!this.refs[ref]) ref = decodeURIComponent(ref);
-      
+
       schema = this.extendSchemas(schema,this.refs[ref]);
     }
     return schema;
@@ -687,7 +691,7 @@ JSONEditor.prototype = {
     if(schema.not) {
       schema.not = this.expandSchema(schema.not);
     }
-    
+
     // allOf schemas should be merged into the parent
     if(schema.allOf) {
       for(i=0; i<schema.allOf.length; i++) {
@@ -717,7 +721,7 @@ JSONEditor.prototype = {
         extended.oneOf[i] = this.extendSchemas(this.expandSchema(schema.oneOf[i]),tmp);
       }
     }
-    
+
     return this.expandRefs(extended);
   },
   extendSchemas: function(obj1, obj2) {
@@ -803,6 +807,7 @@ JSONEditor.defaults = {
   resolvers: [],
   custom_validators: []
 };
+
 JSONEditor.Validator = Class.extend({
   init: function(jsoneditor,schema,options) {
     this.jsoneditor = jsoneditor;
@@ -1378,6 +1383,7 @@ JSONEditor.Validator = Class.extend({
     }
   }
 });
+
 /**
  * All editors should extend from this class
  */
@@ -1422,7 +1428,6 @@ JSONEditor.AbstractEditor = Class.extend({
 
     this.options = $extend({}, (this.options || {}), (options.schema.options || {}), options);
 
-    if (!options.iconlib) this.options.iconlib = "icons4menu";
     if(!options.path && !this.schema.id) this.schema.id = 'root';
     this.path = options.path || 'root';
     this.formname = options.formname || this.path.replace(/\.([^.]+)/g,'[$1]');
@@ -1524,11 +1529,9 @@ JSONEditor.AbstractEditor = Class.extend({
 
   getButton: function(text, icon, title) {
     var btnClass = 'json-editor-btn-'+icon;
-    if(!this.iconlib) {
-      icon = null;
-    } else {
-      icon = this.iconlib.getIcon(icon);
-    }
+    if(!this.iconlib) icon = null;
+    else icon = this.iconlib.getIcon(icon);
+
     if(!icon && title) {
       text = title;
       title = null;
@@ -1852,6 +1855,7 @@ JSONEditor.AbstractEditor = Class.extend({
 
   }
 });
+
 JSONEditor.defaults.editors["null"] = JSONEditor.AbstractEditor.extend({
   getValue: function() {
     return null;
@@ -1863,6 +1867,7 @@ JSONEditor.defaults.editors["null"] = JSONEditor.AbstractEditor.extend({
     return 2;
   }
 });
+
 JSONEditor.defaults.editors.string = JSONEditor.AbstractEditor.extend({
   register: function() {
     this._super();
@@ -2227,65 +2232,9 @@ JSONEditor.defaults.editors.string = JSONEditor.AbstractEditor.extend({
         // The theme
         if(JSONEditor.plugins.ace.theme) this.ace_editor.setTheme('ace/theme/'+JSONEditor.plugins.ace.theme);
         // The mode
-        //mode = window.ace.require("ace/mode/"+mode);
-        //if(mode) this.ace_editor.getSession().setMode(new mode.Mode());
-        if([
-            'actionscript',
-            'batchfile',
-            'bbcode',
-            'c',
-            'c++',
-            'cpp',
-            'c_cpp',
-            'coffee',
-            'csharp',
-            'css',
-            'dart',
-            'django',
-            'ejs',
-            'erlang',
-            'golang',
-            'groovy',
-            'handlebars',
-            'haskell',
-            'haxe',
-            'html',
-            'ini',
-            'jade',
-            'java',
-            'javascript',
-            'json',
-            'less',
-            'lisp',
-            'lua',
-            'makefile',
-            'markdown',
-            'matlab',
-            'mysql',
-            'objectivec',
-            'pascal',
-            'perl',
-            'pgsql',
-            'php',
-            'python',
-            'r',
-            'ruby',
-            'sass',
-            'scala',
-            'scss',
-            'smarty',
-            'sql',
-            'stylus',
-            'svg',
-            'twig',
-            'vbscript',
-            'xml',
-            'yaml'
-          ].indexOf(this.format) >= 0
-        ) {
-          console.log("Mode ACE Editor: '"+mode+"'");        
-          this.ace_editor.session.setMode('ace/mode/'+mode);
-        };
+        mode = window.ace.require("ace/mode/"+mode);
+        if(mode) this.ace_editor.getSession().setMode(new mode.Mode());
+
         // Listen for changes
         this.ace_editor.on('change',function() {
           var val = self.ace_editor.getValue();
@@ -2367,124 +2316,8 @@ JSONEditor.defaults.editors.string = JSONEditor.AbstractEditor.extend({
     }
   }
 });
-/**
- * Created by Mehmet Baker on 12.04.2017
- */
-JSONEditor.defaults.editors.hidden = JSONEditor.AbstractEditor.extend({
-  register: function () {
-    this._super();
-    if (!this.input) return;
-    this.input.setAttribute('name', this.formname);
-  },
-  unregister: function () {
-    this._super();
-    if (!this.input) return;
-    this.input.removeAttribute('name');
-  },
-  setValue: function (value, initial, from_template) {
-    var self = this;
 
-    if(this.template && !from_template) {
-      return;
-    }
-
-    if(value === null || typeof value === 'undefined') value = "";
-    else if(typeof value === "object") value = JSON.stringify(value);
-    else if(typeof value !== "string") value = ""+value;
-
-    if(value === this.serialized) return;
-
-    // Sanitize value before setting it
-    var sanitized = this.sanitize(value);
-
-    if(this.input.value === sanitized) {
-      return;
-    }
-
-    this.input.value = sanitized;
-
-    var changed = from_template || this.getValue() !== value;
-
-    this.refreshValue();
-
-    if(initial) this.is_dirty = false;
-    else if(this.jsoneditor.options.show_errors === "change") this.is_dirty = true;
-
-    if(this.adjust_height) this.adjust_height(this.input);
-
-    // Bubble this setValue to parents if the value changed
-    this.onChange(changed);
-  },
-  getNumColumns: function () {
-    return 2;
-  },
-  enable: function () {
-    this._super();
-  },
-  disable: function () {
-    this._super();
-  },
-  refreshValue: function () {
-    this.value = this.input.value;
-    if (typeof this.value !== "string") this.value = '';
-    this.serialized = this.value;
-  },
-  destroy: function () {
-    this.template = null;
-    if (this.input && this.input.parentNode) this.input.parentNode.removeChild(this.input);
-    if (this.label && this.label.parentNode) this.label.parentNode.removeChild(this.label);
-    if (this.description && this.description.parentNode) this.description.parentNode.removeChild(this.description);
-
-    this._super();
-  },
-  /**
-   * This is overridden in derivative editors
-   */
-  sanitize: function (value) {
-    return value;
-  },
-  /**
-   * Re-calculates the value if needed
-   */
-  onWatchedFieldChange: function () {
-    var self = this, vars, j;
-
-    // If this editor needs to be rendered by a macro template
-    if (this.template) {
-      vars = this.getWatchedFieldValues();
-      this.setValue(this.template(vars), false, true);
-    }
-
-    this._super();
-  },
-  build: function () {
-    var self = this;
-
-    this.format = this.schema.format;
-    if (!this.format && this.options.default_format) {
-      this.format = this.options.default_format;
-    }
-    if (this.options.format) {
-      this.format = this.options.format;
-    }
-
-    this.input_type = 'hidden';
-    this.input = this.theme.getFormInputField(this.input_type);
-
-    if (this.format) this.input.setAttribute('data-schemaformat', this.format);
-
-    this.container.appendChild(this.input);
-
-    // Compile and store the template
-    if (this.schema.template) {
-      this.template = this.jsoneditor.compileTemplate(this.schema.template, this.template_engine);
-      this.refreshValue();
-    }
-    else {
-      this.refreshValue();
-    }
-  }
-});JSONEditor.defaults.editors.number = JSONEditor.defaults.editors.string.extend({
+JSONEditor.defaults.editors.number = JSONEditor.defaults.editors.string.extend({
   sanitize: function(value) {
     return (value+"").replace(/[^0-9\.\-eE]/g,'');
   },
@@ -2495,6 +2328,7 @@ JSONEditor.defaults.editors.hidden = JSONEditor.AbstractEditor.extend({
     return this.value*1;
   }
 });
+
 JSONEditor.defaults.editors.integer = JSONEditor.defaults.editors.number.extend({
   sanitize: function(value) {
     value = value + "";
@@ -2504,6 +2338,7 @@ JSONEditor.defaults.editors.integer = JSONEditor.defaults.editors.number.extend(
     return 2;
   }
 });
+
 JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
   getDefault: function() {
     return $extend({},this.schema["default"] || {});
@@ -3218,7 +3053,7 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
       if(!this.editors.hasOwnProperty(i)) continue;
       this.value[i] = this.editors[i].getValue();
     }
-    
+
     if(this.adding_property) this.refreshAddProperties();
   },
   refreshAddProperties: function() {
@@ -3390,6 +3225,7 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
     });
   }
 });
+
 JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
   getDefault: function() {
     return this.schema["default"] || [];
@@ -3424,11 +3260,11 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
     if(this.add_row_button) this.add_row_button.disabled = false;
     if(this.remove_all_rows_button) this.remove_all_rows_button.disabled = false;
     if(this.delete_last_row_button) this.delete_last_row_button.disabled = false;
-    
+
     if(this.rows) {
       for(var i=0; i<this.rows.length; i++) {
         this.rows[i].enable();
-        
+
         if(this.rows[i].moveup_button) this.rows[i].moveup_button.disabled = false;
         if(this.rows[i].movedown_button) this.rows[i].movedown_button.disabled = false;
         if(this.rows[i].delete_button) this.rows[i].delete_button.disabled = false;
@@ -3444,7 +3280,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
     if(this.rows) {
       for(var i=0; i<this.rows.length; i++) {
         this.rows[i].disable();
-        
+
         if(this.rows[i].moveup_button) this.rows[i].moveup_button.disabled = true;
         if(this.rows[i].movedown_button) this.rows[i].movedown_button.disabled = true;
         if(this.rows[i].delete_button) this.rows[i].delete_button.disabled = true;
@@ -3454,7 +3290,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
   },
   preBuild: function() {
     this._super();
-    
+
     this.rows = [];
     this.row_cache = [];
 
@@ -3551,22 +3387,22 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
   },
   getItemInfo: function(i) {
     var schema = this.getItemSchema(i);
-    
+
     // Check if it's cached
     this.item_info = this.item_info || {};
     var stringified = JSON.stringify(schema);
     if(typeof this.item_info[stringified] !== "undefined") return this.item_info[stringified];
-    
+
     // Get the schema for this item
     schema = this.jsoneditor.expandRefs(schema);
-      
+
     this.item_info[stringified] = {
       title: schema.title || "item",
       'default': schema["default"],
       width: 12,
       child_editors: schema.properties || schema.items
     };
-    
+
     return this.item_info[stringified];
   },
   getElementEditor: function(i) {
@@ -3606,7 +3442,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
       ret.array_controls = this.theme.getButtonHolder();
       holder.appendChild(ret.array_controls);
     }
-    
+
     return ret;
   },
   destroy: function() {
@@ -3616,7 +3452,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
     if(this.row_holder && this.row_holder.parentNode) this.row_holder.parentNode.removeChild(this.row_holder);
     if(this.controls && this.controls.parentNode) this.controls.parentNode.removeChild(this.controls);
     if(this.panel && this.panel.parentNode) this.panel.parentNode.removeChild(this.panel);
-    
+
     this.rows = this.row_cache = this.title = this.description = this.row_holder = this.panel = this.controls = null;
 
     this._super();
@@ -3679,9 +3515,9 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
   setValue: function(value, initial) {
     // Update the array's value, adding/removing rows when necessary
     value = value || [];
-    
+
     if(!(Array.isArray(value))) value = [value];
-    
+
     var serialized = JSON.stringify(value);
     if(serialized === this.serialized) return;
 
@@ -3736,7 +3572,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
     self.refreshTabs();
 
     self.onChange();
-    
+
     // TODO: sortable
   },
   refreshValue: function(force) {
@@ -3748,11 +3584,11 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
       // Get the value for this editor
       self.value[i] = editor.getValue();
     });
-    
+
     if(oldi !== this.value.length || force) {
       // If we currently have minItems items in the array
       var minItems = this.schema.minItems && this.schema.minItems >= this.rows.length;
-      
+
       $each(this.rows,function(i,editor) {
         // Hide the move down button for the last row
         if(editor.movedown_button) {
@@ -3777,15 +3613,15 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
         // Get the value for this editor
         self.value[i] = editor.getValue();
       });
-      
+
       var controls_needed = false;
-      
+
       if(!this.value.length) {
         this.delete_last_row_button.style.display = 'none';
         this.remove_all_rows_button.style.display = 'none';
       }
-      else if(this.value.length === 1) {      
-        this.remove_all_rows_button.style.display = 'none';  
+      else if(this.value.length === 1) {
+        this.remove_all_rows_button.style.display = 'none';
 
         // If there are minItems items in the array, or configured to hide the delete_last_row button, hide the delete button beneath the rows
         if(minItems || this.hide_delete_last_row_buttons) {
@@ -3821,8 +3657,8 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
       else {
         this.add_row_button.style.display = '';
         controls_needed = true;
-      } 
-      
+      }
+
       if(!this.collapsed && controls_needed) {
         this.controls.style.display = 'inline-block';
       }
@@ -3834,7 +3670,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
   addRow: function(value, initial) {
     var self = this;
     var i = this.rows.length;
-    
+
     self.rows[i] = this.getElementEditor(i);
     self.row_cache[i] = self.rows[i];
 
@@ -3851,9 +3687,9 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
 
       self.theme.addTab(self.tabs_holder, self.rows[i].tab);
     }
-    
+
     var controls_holder = self.rows[i].title_controls || self.rows[i].array_controls;
-    
+
     // Buttons to delete row, move row up, and move row down
     if(!self.hide_delete_buttons) {
       self.rows[i].delete_button = this.getButton(self.getItemTitle(),'delete',this.translate('button_delete_row_title',[self.getItemTitle()]));
@@ -3878,7 +3714,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
               // Otherwise, make the previous tab active if there is one
               else if(j) new_active_tab = self.rows[j-1].tab;
             }
-            
+
             return; // If this is the one we're deleting
           }
           newval.push(row);
@@ -3891,12 +3727,12 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
 
         self.onChange(true);
       });
-      
+
       if(controls_holder) {
         controls_holder.appendChild(self.rows[i].delete_button);
       }
     }
-    
+
     if(i && !self.hide_move_buttons) {
       self.rows[i].moveup_button = this.getButton('','moveup',this.translate('button_move_up_title'));
       self.rows[i].moveup_button.className += ' moveup';
@@ -3918,12 +3754,12 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
 
         self.onChange(true);
       });
-      
+
       if(controls_holder) {
         controls_holder.appendChild(self.rows[i].moveup_button);
       }
     }
-    
+
     if(!self.hide_move_buttons) {
       self.rows[i].movedown_button = this.getButton('','movedown',this.translate('button_move_down_title'));
       self.rows[i].movedown_button.className += ' movedown';
@@ -3944,7 +3780,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
         self.refreshTabs();
         self.onChange(true);
       });
-      
+
       if(controls_holder) {
         controls_holder.appendChild(self.rows[i].movedown_button);
       }
@@ -3955,7 +3791,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
   },
   addControls: function() {
     var self = this;
-    
+
     this.collapsed = false;
     this.toggle_button = this.getButton('','collapse',this.translate('button_collapse'));
     this.title_controls.appendChild(this.toggle_button);
@@ -3986,7 +3822,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
     if(this.options.collapsed) {
       $trigger(this.toggle_button,'click');
     }
-    
+
     // Collapse button disabled
     if(this.schema.options && typeof this.schema.options.disable_collapse !== "undefined") {
       if(this.schema.options.disable_collapse) this.toggle_button.style.display = 'none';
@@ -3994,10 +3830,10 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
     else if(this.jsoneditor.options.disable_collapse) {
       this.toggle_button.style.display = 'none';
     }
-    
+
     // Add "new row" and "delete last" buttons below editor
     this.add_row_button = this.getButton(this.getItemTitle(),'add',this.translate('button_add_row_title',[this.getItemTitle()]));
-    
+
     this.add_row_button.addEventListener('click',function(e) {
       e.preventDefault();
       e.stopPropagation();
@@ -4024,10 +3860,10 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
       e.preventDefault();
       e.stopPropagation();
       var rows = self.getValue();
-      
+
       var new_active_tab = null;
       if(self.rows.length > 1 && self.rows[self.rows.length-1].tab === self.active_tab) new_active_tab = self.rows[self.rows.length-2].tab;
-      
+
       rows.pop();
       self.setValue(rows);
       if(new_active_tab) {
@@ -4051,11 +3887,11 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
       this.add_row_button.style.width = '100%';
       this.add_row_button.style.textAlign = 'left';
       this.add_row_button.style.marginBottom = '3px';
-      
+
       this.delete_last_row_button.style.width = '100%';
       this.delete_last_row_button.style.textAlign = 'left';
       this.delete_last_row_button.style.marginBottom = '3px';
-      
+
       this.remove_all_rows_button.style.width = '100%';
       this.remove_all_rows_button.style.textAlign = 'left';
       this.remove_all_rows_button.style.marginBottom = '3px';
@@ -4098,6 +3934,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
     });
   }
 });
+
 JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
   register: function() {
     this._super();
@@ -4561,6 +4398,7 @@ JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
     self.controls.appendChild(this.remove_all_rows_button);
   }
 });
+
 // Multiple Editor (for when `type` is an array)
 JSONEditor.defaults.editors.multiple = JSONEditor.AbstractEditor.extend({
   register: function() {
@@ -4612,7 +4450,7 @@ JSONEditor.defaults.editors.multiple = JSONEditor.AbstractEditor.extend({
     if(!this.editors[i]) {
       this.buildChildEditor(i);
     }
-    
+
     var current_value = self.getValue();
 
     self.type = i;
@@ -4745,8 +4583,8 @@ JSONEditor.defaults.editors.multiple = JSONEditor.AbstractEditor.extend({
 
     this.editor_holder = document.createElement('div');
     container.appendChild(this.editor_holder);
-    
-      
+
+
     var validator_options = {};
     if(self.jsoneditor.options.custom_validators) {
       validator_options.custom_validators = self.jsoneditor.options.custom_validators;
@@ -4848,6 +4686,7 @@ JSONEditor.defaults.editors.multiple = JSONEditor.AbstractEditor.extend({
     }
   }
 });
+
 // Enum Editor (used for objects and arrays with enumerated values)
 JSONEditor.defaults.editors["enum"] = JSONEditor.AbstractEditor.extend({
   getNumColumns: function() {
@@ -4976,6 +4815,7 @@ JSONEditor.defaults.editors["enum"] = JSONEditor.AbstractEditor.extend({
     this._super();
   }
 });
+
 JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
   setValue: function(value,initial) {
     value = this.typecast(value||'');
@@ -5041,7 +4881,7 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
     // Enum options enumerated
     if(this.schema["enum"]) {
       var display = this.schema.options && this.schema.options.enum_titles || [];
-      
+
       $each(this.schema["enum"],function(i,option) {
         self.enum_options[i] = ""+option;
         self.enum_display[i] = ""+(display[i] || option);
@@ -5053,20 +4893,20 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
         self.enum_options.unshift('undefined');
         self.enum_values.unshift(undefined);
       }
-            
+
     }
     // Boolean
     else if(this.schema.type === "boolean") {
       self.enum_display = this.schema.options && this.schema.options.enum_titles || ['true','false'];
       self.enum_options = ['1',''];
       self.enum_values = [true,false];
-      
+
       if(!this.isRequired()){
         self.enum_display.unshift(' ');
         self.enum_options.unshift('undefined');
         self.enum_values.unshift(undefined);
       }
-    
+
     }
     // Dynamic Enum
     else if(this.schema.enumSource) {
@@ -5074,7 +4914,7 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
       this.enum_display = [];
       this.enum_options = [];
       this.enum_values = [];
-      
+
       // Shortcut declaration for using a single array
       if(!(Array.isArray(this.schema.enumSource))) {
         if(this.schema.enumValue) {
@@ -5110,7 +4950,7 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
           }
         }
       }
-      
+
       // Now, enumSource is an array of sources
       // Walk through this array and fix up the values
       for(i=0; i<this.enumSource.length; i++) {
@@ -5202,13 +5042,13 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
   },
   onWatchedFieldChange: function() {
     var self = this, vars, j;
-    
+
     // If this editor uses a dynamic select box
     if(this.enumSource) {
       vars = this.getWatchedFieldValues();
       var select_options = [];
       var select_titles = [];
-      
+
       for(var i=0; i<this.enumSource.length; i++) {
         // Constant values
         if(Array.isArray(this.enumSource[i])) {
@@ -5224,7 +5064,7 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
           } else {
             items = vars[this.enumSource[i].source];
           }
-          
+
           if(items) {
             // Only use a predefined part of the array
             if(this.enumSource[i].slice) {
@@ -5238,12 +5078,12 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
               }
               items = new_items;
             }
-            
+
             var item_titles = [];
             var item_values = [];
             for(j=0; j<items.length; j++) {
               var item = items[j];
-              
+
               // Rendered value
               if(this.enumSource[i].value) {
                 item_values[j] = this.enumSource[i].value({
@@ -5255,7 +5095,7 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
               else {
                 item_values[j] = items[j];
               }
-              
+
               // Rendered title
               if(this.enumSource[i].title) {
                 item_titles[j] = this.enumSource[i].title({
@@ -5268,26 +5108,26 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
                 item_titles[j] = item_values[j];
               }
             }
-            
+
             // TODO: sort
-            
+
             select_options = select_options.concat(item_values);
             select_titles = select_titles.concat(item_titles);
           }
         }
       }
-      
+
       var prev_value = this.value;
-      
+
       this.theme.setSelectOptions(this.input, select_options, select_titles);
       this.enum_options = select_options;
       this.enum_display = select_titles;
       this.enum_values = select_options;
-      
+
       if(this.select2) {
         this.select2.select2('destroy');
       }
-      
+
       // If the previous value is still in the new select options, stick with it
       if(select_options.indexOf(prev_value) !== -1) {
         this.input.value = prev_value;
@@ -5296,12 +5136,12 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
       // Otherwise, set the value to the first select option
       else {
         this.input.value = select_options[0];
-        this.value = select_options[0] || "";  
+        this.value = select_options[0] || "";
         if(this.parent) this.parent.onChildEditorChange(this);
         else this.jsoneditor.onChange();
         this.jsoneditor.notifyWatchers(this.path);
       }
-      
+
       this.setupSelect2();
     }
 
@@ -5331,6 +5171,7 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
     this._super();
   }
 });
+
 JSONEditor.defaults.editors.selectize = JSONEditor.AbstractEditor.extend({
   setValue: function(value,initial) {
     value = this.typecast(value||'');
@@ -5678,6 +5519,7 @@ JSONEditor.defaults.editors.selectize = JSONEditor.AbstractEditor.extend({
     this._super();
   }
 });
+
 JSONEditor.defaults.editors.multiselect = JSONEditor.AbstractEditor.extend({
   preBuild: function() {
     this._super();
@@ -5880,29 +5722,30 @@ JSONEditor.defaults.editors.multiselect = JSONEditor.AbstractEditor.extend({
     this._super();
   }
 });
+
 JSONEditor.defaults.editors.base64 = JSONEditor.AbstractEditor.extend({
   getNumColumns: function() {
     return 4;
   },
-  build: function() {    
+  build: function() {
     var self = this;
     this.title = this.header = this.label = this.theme.getFormInputLabel(this.getTitle());
 
     // Input that holds the base64 string
     this.input = this.theme.getFormInputField('hidden');
     this.container.appendChild(this.input);
-    
+
     // Don't show uploader if this is readonly
     if(!this.schema.readOnly && !this.schema.readonly) {
       if(!window.FileReader) throw "FileReader required for base64 editor";
-      
+
       // File uploader
       this.uploader = this.theme.getFormInputField('file');
-      
+
       this.uploader.addEventListener('change',function(e) {
         e.preventDefault();
         e.stopPropagation();
-        
+
         if(this.files && this.files.length) {
           var fr = new FileReader();
           fr.onload = function(evt) {
@@ -5925,14 +5768,14 @@ JSONEditor.defaults.editors.base64 = JSONEditor.AbstractEditor.extend({
   refreshPreview: function() {
     if(this.last_preview === this.value) return;
     this.last_preview = this.value;
-    
+
     this.preview.innerHTML = '';
-    
+
     if(!this.value) return;
-    
+
     var mime = this.value.match(/^data:([^;,]+)[;,]/);
     if(mime) mime = mime[1];
-    
+
     if(!mime) {
       this.preview.innerHTML = '<em>Invalid data URI</em>';
     }
@@ -5973,18 +5816,19 @@ JSONEditor.defaults.editors.base64 = JSONEditor.AbstractEditor.extend({
     this._super();
   }
 });
+
 JSONEditor.defaults.editors.upload = JSONEditor.AbstractEditor.extend({
   getNumColumns: function() {
     return 4;
   },
-  build: function() {    
+  build: function() {
     var self = this;
     this.title = this.header = this.label = this.theme.getFormInputLabel(this.getTitle());
 
     // Input that holds the base64 string
     this.input = this.theme.getFormInputField('hidden');
     this.container.appendChild(this.input);
-    
+
     // Don't show uploader if this is readonly
     if(!this.schema.readOnly && !this.schema.readonly) {
 
@@ -5992,11 +5836,11 @@ JSONEditor.defaults.editors.upload = JSONEditor.AbstractEditor.extend({
 
       // File uploader
       this.uploader = this.theme.getFormInputField('file');
-      
+
       this.uploader.addEventListener('change',function(e) {
         e.preventDefault();
         e.stopPropagation();
-        
+
         if(this.files && this.files.length) {
           var fr = new FileReader();
           fr.onload = function(evt) {
@@ -6024,7 +5868,7 @@ JSONEditor.defaults.editors.upload = JSONEditor.AbstractEditor.extend({
     this.last_preview = this.preview_value;
 
     this.preview.innerHTML = '';
-    
+
     if(!this.preview_value) return;
 
     var self = this;
@@ -6107,6 +5951,7 @@ JSONEditor.defaults.editors.upload = JSONEditor.AbstractEditor.extend({
     this._super();
   }
 });
+
 JSONEditor.defaults.editors.checkbox = JSONEditor.AbstractEditor.extend({
   setValue: function(value,initial) {
     this.value = !!value;
@@ -6168,6 +6013,7 @@ JSONEditor.defaults.editors.checkbox = JSONEditor.AbstractEditor.extend({
     this._super();
   }
 });
+
 JSONEditor.defaults.editors.arraySelectize = JSONEditor.AbstractEditor.extend({
   build: function() {
     this.title = this.theme.getFormInputLabel(this.getTitle());
@@ -6262,6 +6108,7 @@ JSONEditor.defaults.editors.arraySelectize = JSONEditor.AbstractEditor.extend({
     }
   }
 });
+
 var matchKey = (function () {
   var elem = document.documentElement;
 
@@ -6611,6 +6458,7 @@ JSONEditor.AbstractTheme = Class.extend({
     link.appendChild(image);
   }
 });
+
 JSONEditor.defaults.themes.bootstrap2 = JSONEditor.AbstractTheme.extend({
   getRangeInput: function(min, max, step) {
     // TODO: use bootstrap slider
@@ -6792,6 +6640,7 @@ JSONEditor.defaults.themes.bootstrap2 = JSONEditor.AbstractTheme.extend({
     progressBar.firstChild.style.width = '100%';
   }
 });
+
 JSONEditor.defaults.themes.bootstrap3 = JSONEditor.AbstractTheme.extend({
   getSelectInput: function(options) {
     var el = this._super(options);
@@ -6838,7 +6687,7 @@ JSONEditor.defaults.themes.bootstrap3 = JSONEditor.AbstractTheme.extend({
       group.appendChild(label);
       input.style.position = 'relative';
       input.style.cssFloat = 'left';
-    } 
+    }
     else {
       group.className += ' form-group';
       if(label) {
@@ -6961,6 +6810,7 @@ JSONEditor.defaults.themes.bootstrap3 = JSONEditor.AbstractTheme.extend({
     bar.innerHTML = '';
   }
 });
+
 // Base Foundation theme
 JSONEditor.defaults.themes.foundation = JSONEditor.AbstractTheme.extend({
   getChildEditorHolder: function() {
@@ -7247,6 +7097,7 @@ JSONEditor.defaults.themes.foundation6 = JSONEditor.defaults.themes.foundation5.
     }
   },
 });
+
 JSONEditor.defaults.themes.html = JSONEditor.AbstractTheme.extend({
   getFormInputLabel: function(text) {
     var el = this._super(text);
@@ -7292,7 +7143,7 @@ JSONEditor.defaults.themes.html = JSONEditor.AbstractTheme.extend({
   },
   addInputError: function(input, text) {
     input.style.borderColor = 'red';
-    
+
     if(!input.errmsg) {
       var group = this.closest(input,'.form-control');
       input.errmsg = document.createElement('div');
@@ -7304,7 +7155,7 @@ JSONEditor.defaults.themes.html = JSONEditor.AbstractTheme.extend({
     else {
       input.errmsg.style.display = 'block';
     }
-    
+
     input.errmsg.innerHTML = '';
     input.errmsg.appendChild(document.createTextNode(text));
   },
@@ -7329,6 +7180,7 @@ JSONEditor.defaults.themes.html = JSONEditor.AbstractTheme.extend({
     progressBar.removeAttribute('value');
   }
 });
+
 JSONEditor.defaults.themes.jqueryui = JSONEditor.AbstractTheme.extend({
   getTable: function() {
     var el = this._super();
@@ -7364,7 +7216,7 @@ JSONEditor.defaults.themes.jqueryui = JSONEditor.AbstractTheme.extend({
     var el = this._super(label,input,description);
     if(input.type === 'checkbox') {
       el.style.lineHeight = '25px';
-      
+
       el.style.padding = '3px 0';
     }
     else {
@@ -7419,7 +7271,7 @@ JSONEditor.defaults.themes.jqueryui = JSONEditor.AbstractTheme.extend({
     button.appendChild(el);
 
     button.setAttribute('title',title);
-    
+
     return button;
   },
   setButtonText: function(button,text, icon, title) {
@@ -7485,6 +7337,7 @@ JSONEditor.defaults.themes.jqueryui = JSONEditor.AbstractTheme.extend({
     tab.className = tab.className.replace(/\s*ui-state-active/g,'')+' ui-widget-header';
   }
 });
+
 JSONEditor.defaults.themes.barebones = JSONEditor.AbstractTheme.extend({
     getFormInputLabel: function (text) {
         var el = this._super(text);
@@ -7545,50 +7398,25 @@ JSONEditor.defaults.themes.barebones = JSONEditor.AbstractTheme.extend({
         progressBar.removeAttribute('value');
     }
 });
+
 JSONEditor.AbstractIconLib = Class.extend({
-  imgtag:"img",
-  width: 14,
-  heigth: 14,
   mapping: {
-    "collapse": '',
-    "expand": '',
+    collapse: '',
+    expand: '',
     "delete": '',
-    "edit": '',
-    "add": '',
-    "cancel": '',
-    "save": '',
-    "moveup": '',
-    "movedown": ''
+    edit: '',
+    add: '',
+    cancel: '',
+    save: '',
+    moveup: '',
+    movedown: ''
   },
   icon_prefix: '',
-
   getIconClass: function(key) {
     if(this.mapping[key]) return this.icon_prefix+this.mapping[key];
     else return null;
   },
-  getIcon4Image: function(key) {
-    var vIcon = this.getIconData(key);
-
-    if(!vIcon) {
-      return null;
-    } else {
-      var img = document.createElement('img');
-       //<img src="img/icons-svg/alert-black.png" alt="Girl in a jacket" width="500" height="600">
-      img.setAttribute("src", vIcon.src);
-      img.setAttribute("width", this.width);
-      img.setAttribute("heigth", this.height);
-      img.setAttribute("licence", vIcon.license);
-      return img;
-    }
-  },
   getIcon: function(key) {
-    if (this.imgtag && (this.imgtag === "img")) {
-      return this.getIcon4Image(key);
-    } else {
-      return this.getIcon4Class(key);
-    }
-  },
-  getIcon4Class: function(key) {
     var iconclass = this.getIconClass(key);
 
     if(!iconclass) return null;
@@ -7596,17 +7424,9 @@ JSONEditor.AbstractIconLib = Class.extend({
     var i = document.createElement('i');
     i.className = iconclass;
     return i;
-  },
-  getIconData: function(key) {
-    if (this.icons && this.icons[key]) {
-      return this.icons[key];
-    } else {
-      console.error("ERROR: Icon not found for key '" + key + "' in src/iconlib.js");
-      return null;
-    }
   }
-
 });
+
 JSONEditor.defaults.iconlibs.bootstrap2 = JSONEditor.AbstractIconLib.extend({
   mapping: {
     collapse: 'chevron-down',
@@ -7621,6 +7441,7 @@ JSONEditor.defaults.iconlibs.bootstrap2 = JSONEditor.AbstractIconLib.extend({
   },
   icon_prefix: 'icon-'
 });
+
 JSONEditor.defaults.iconlibs.bootstrap3 = JSONEditor.AbstractIconLib.extend({
   mapping: {
     collapse: 'chevron-down',
@@ -7635,6 +7456,7 @@ JSONEditor.defaults.iconlibs.bootstrap3 = JSONEditor.AbstractIconLib.extend({
   },
   icon_prefix: 'glyphicon glyphicon-'
 });
+
 JSONEditor.defaults.iconlibs.fontawesome3 = JSONEditor.AbstractIconLib.extend({
   mapping: {
     collapse: 'chevron-down',
@@ -7649,6 +7471,7 @@ JSONEditor.defaults.iconlibs.fontawesome3 = JSONEditor.AbstractIconLib.extend({
   },
   icon_prefix: 'icon-'
 });
+
 JSONEditor.defaults.iconlibs.fontawesome4 = JSONEditor.AbstractIconLib.extend({
   mapping: {
     collapse: 'caret-square-o-down',
@@ -7663,6 +7486,7 @@ JSONEditor.defaults.iconlibs.fontawesome4 = JSONEditor.AbstractIconLib.extend({
   },
   icon_prefix: 'fa fa-'
 });
+
 JSONEditor.defaults.iconlibs.foundation2 = JSONEditor.AbstractIconLib.extend({
   mapping: {
     collapse: 'minus',
@@ -7677,6 +7501,7 @@ JSONEditor.defaults.iconlibs.foundation2 = JSONEditor.AbstractIconLib.extend({
   },
   icon_prefix: 'foundicon-'
 });
+
 JSONEditor.defaults.iconlibs.foundation3 = JSONEditor.AbstractIconLib.extend({
   mapping: {
     collapse: 'minus',
@@ -7691,123 +7516,7 @@ JSONEditor.defaults.iconlibs.foundation3 = JSONEditor.AbstractIconLib.extend({
   },
   icon_prefix: 'fi-'
 });
-JSONEditor.defaults.iconlibs.icons4menu = JSONEditor.AbstractIconLib.extend({
-  mapping: {
-    "collapse": "carat-d-black.svg",
-    "expand": "carat-r-black.svg",
-    "delete": "fa-trash-black",
-    "edit": "edit-black.svg",
-    "add": "plus-black.svg",
-    "cancel": "cancel-black.svg",
-    "load": "fa-folder-open-black.svg",
-    "save": "fa-file-save-black.svg",
-    "moveup": "arrow-u-black.svg",
-    "movedown": "arrow-d-black.svg"
-  },
-  icon_prefix: 'icons4menu-',
-  icons: {
-    "collapse":  {
-        "name": "carat-d-black.svg",
-        "path": "img/icons-svg",
-        "used": false,
-        "src": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTYuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiCgkgd2lkdGg9IjE0cHgiIGhlaWdodD0iMTRweCIgdmlld0JveD0iMCAwIDE0IDE0IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxNCAxNDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8cG9seWdvbiBmaWxsPSIjMDAwIiBwb2ludHM9IjExLjk0OSwzLjQwNCA3LDguMzU0IDIuMDUsMy40MDQgLTAuMDcxLDUuNTI1IDcsMTIuNTk2IDE0LjA3LDUuNTI1ICIvPgo8L3N2Zz4K",
-        "license": "CC0",
-        "group": "navigation",
-        "raw": "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n<svg version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\n\t width=\"14px\" height=\"14px\" viewBox=\"0 0 14 14\" style=\"enable-background:new 0 0 14 14;\" xml:space=\"preserve\">\n<polygon fill=\"#000\" points=\"11.949,3.404 7,8.354 2.05,3.404 -0.071,5.525 7,12.596 14.07,5.525 \"/>\n</svg>\n",
-        "wikicommons": "https://jquerymobile.com/download/"
-    },
-    "expand": {
-        "name": "carat-r-black.svg",
-        "path": "img/icons-svg",
-        "used": false,
-        "src": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTYuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiCgkgd2lkdGg9IjE0cHgiIGhlaWdodD0iMTRweCIgdmlld0JveD0iMCAwIDE0IDE0IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxNCAxNDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8cG9seWdvbiBzdHlsZT0iZmlsbDojMDAwIiBwb2ludHM9IjMuNDA0LDIuMDUxIDguMzU0LDcgMy40MDQsMTEuOTUgNS41MjUsMTQuMDcgMTIuNTk2LDcgNS41MjUsLTAuMDcxICIvPgo8L3N2Zz4K",
-        "license": "CC0",
-        "group": "navigation",
-        "raw": "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n<svg version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\n\t width=\"14px\" height=\"14px\" viewBox=\"0 0 14 14\" style=\"enable-background:new 0 0 14 14;\" xml:space=\"preserve\">\n<polygon style=\"fill:#000\" points=\"3.404,2.051 8.354,7 3.404,11.95 5.525,14.07 12.596,7 5.525,-0.071 \"/>\n</svg>\n",
-        "wikicommons": "https://jquerymobile.com/download/"
-    },
-    "delete": {
-        "name": "fa-trash-black.svg",
-        "path": "img/icons-svg",
-        "used": false,
-        "src": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIgogICB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgdmlld0JveD0iMCAtMjU2IDE3OTIgMTc5MiIKICAgaWQ9InN2ZzM3NDEiCiAgIHZlcnNpb249IjEuMSIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMC40OC4zLjEgcjk4ODYiCiAgIHdpZHRoPSIxNHB4IgogICBoZWlnaHQ9IjE0cHgiCiAgIHdpa2ljb21tb25zPSJodHRwczovL3VwbG9hZC53aWtpbWVkaWEub3JnL3dpa2lwZWRpYS9jb21tb25zLzcvN2QvVHJhc2hfZm9udF9hd2Vzb21lLnN2ZyIKICAgc29kaXBvZGk6ZG9jbmFtZT0idHJhc2hfZm9udF9hd2Vzb21lLnN2ZyI+CiAgPG1ldGFkYXRhCiAgICAgaWQ9Im1ldGFkYXRhMzc1MSI+CiAgICA8cmRmOlJERj4KICAgICAgPGNjOldvcmsKICAgICAgICAgcmRmOmFib3V0PSIiPgogICAgICAgIDxkYzpmb3JtYXQ+aW1hZ2Uvc3ZnK3htbDwvZGM6Zm9ybWF0PgogICAgICAgIDxkYzp0eXBlCiAgICAgICAgICAgcmRmOnJlc291cmNlPSJodHRwOi8vcHVybC5vcmcvZGMvZGNtaXR5cGUvU3RpbGxJbWFnZSIgLz4KICAgICAgPC9jYzpXb3JrPgogICAgPC9yZGY6UkRGPgogIDwvbWV0YWRhdGE+CiAgPGRlZnMKICAgICBpZD0iZGVmczM3NDkiIC8+CiAgPHNvZGlwb2RpOm5hbWVkdmlldwogICAgIHBhZ2Vjb2xvcj0iI2ZmZmZmZiIKICAgICBib3JkZXJjb2xvcj0iIzY2NjY2NiIKICAgICBib3JkZXJvcGFjaXR5PSIxIgogICAgIG9iamVjdHRvbGVyYW5jZT0iMTAiCiAgICAgZ3JpZHRvbGVyYW5jZT0iMTAiCiAgICAgZ3VpZGV0b2xlcmFuY2U9IjEwIgogICAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwIgogICAgIGlua3NjYXBlOnBhZ2VzaGFkb3c9IjIiCiAgICAgaW5rc2NhcGU6d2luZG93LXdpZHRoPSI2NDAiCiAgICAgaW5rc2NhcGU6d2luZG93LWhlaWdodD0iNDgwIgogICAgIGlkPSJuYW1lZHZpZXczNzQ3IgogICAgIHNob3dncmlkPSJmYWxzZSIKICAgICBpbmtzY2FwZTp6b29tPSIwLjEzMTY5NjQzIgogICAgIGlua3NjYXBlOmN4PSI4OTYiCiAgICAgaW5rc2NhcGU6Y3k9Ijg5NiIKICAgICBpbmtzY2FwZTp3aW5kb3cteD0iMCIKICAgICBpbmtzY2FwZTp3aW5kb3cteT0iMjUiCiAgICAgaW5rc2NhcGU6d2luZG93LW1heGltaXplZD0iMCIKICAgICBpbmtzY2FwZTpjdXJyZW50LWxheWVyPSJzdmczNzQxIiAvPgogIDxnCiAgICAgdHJhbnNmb3JtPSJtYXRyaXgoMSwwLDAsLTEsMTk3LjQyMzczLDEyNTUuMDUwOCkiCiAgICAgaWQ9ImczNzQzIj4KICAgIDxwYXRoCiAgICAgICBkPSJNIDUxMiw4MDAgViAyMjQgcSAwLC0xNCAtOSwtMjMgLTksLTkgLTIzLC05IGggLTY0IHEgLTE0LDAgLTIzLDkgLTksOSAtOSwyMyB2IDU3NiBxIDAsMTQgOSwyMyA5LDkgMjMsOSBoIDY0IHEgMTQsMCAyMywtOSA5LC05IDksLTIzIHogbSAyNTYsMCBWIDIyNCBxIDAsLTE0IC05LC0yMyAtOSwtOSAtMjMsLTkgaCAtNjQgcSAtMTQsMCAtMjMsOSAtOSw5IC05LDIzIHYgNTc2IHEgMCwxNCA5LDIzIDksOSAyMyw5IGggNjQgcSAxNCwwIDIzLC05IDksLTkgOSwtMjMgeiBtIDI1NiwwIFYgMjI0IHEgMCwtMTQgLTksLTIzIC05LC05IC0yMywtOSBoIC02NCBxIC0xNCwwIC0yMyw5IC05LDkgLTksMjMgdiA1NzYgcSAwLDE0IDksMjMgOSw5IDIzLDkgaCA2NCBxIDE0LDAgMjMsLTkgOSwtOSA5LC0yMyB6IE0gMTE1Miw3NiB2IDk0OCBIIDI1NiBWIDc2IFEgMjU2LDU0IDI2MywzNS41IDI3MCwxNyAyNzcuNSw4LjUgMjg1LDAgMjg4LDAgaCA4MzIgcSAzLDAgMTAuNSw4LjUgNy41LDguNSAxNC41LDI3IDcsMTguNSA3LDQwLjUgeiBNIDQ4MCwxMTUyIGggNDQ4IGwgLTQ4LDExNyBxIC03LDkgLTE3LDExIEggNTQ2IHEgLTEwLC0yIC0xNywtMTEgeiBtIDkyOCwtMzIgdiAtNjQgcSAwLC0xNCAtOSwtMjMgLTksLTkgLTIzLC05IGggLTk2IFYgNzYgcSAwLC04MyAtNDcsLTE0My41IC00NywtNjAuNSAtMTEzLC02MC41IEggMjg4IHEgLTY2LDAgLTExMyw1OC41IFEgMTI4LC0xMSAxMjgsNzIgdiA5NTIgSCAzMiBxIC0xNCwwIC0yMyw5IC05LDkgLTksMjMgdiA2NCBxIDAsMTQgOSwyMyA5LDkgMjMsOSBoIDMwOSBsIDcwLDE2NyBxIDE1LDM3IDU0LDYzIDM5LDI2IDc5LDI2IGggMzIwIHEgNDAsMCA3OSwtMjYgMzksLTI2IDU0LC02MyBsIDcwLC0xNjcgaCAzMDkgcSAxNCwwIDIzLC05IDksLTkgOSwtMjMgeiIKICAgICAgIGlkPSJwYXRoMzc0NSIKICAgICAgIGlua3NjYXBlOmNvbm5lY3Rvci1jdXJ2YXR1cmU9IjAiCiAgICAgICBzdHlsZT0iZmlsbDojMDAwIiAvPgogIDwvZz4KPC9zdmc+Cg==",
-        "license": "CC BY-SA 3.0",
-        "group": "main",
-        "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<svg\n   xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n   xmlns:cc=\"http://creativecommons.org/ns#\"\n   xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n   xmlns:svg=\"http://www.w3.org/2000/svg\"\n   xmlns=\"http://www.w3.org/2000/svg\"\n   xmlns:sodipodi=\"http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd\"\n   xmlns:inkscape=\"http://www.inkscape.org/namespaces/inkscape\"\n   viewBox=\"0 -256 1792 1792\"\n   id=\"svg3741\"\n   version=\"1.1\"\n   inkscape:version=\"0.48.3.1 r9886\"\n   width=\"14px\"\n   height=\"14px\"\n   wikicommons=\"https://upload.wikimedia.org/wikipedia/commons/7/7d/Trash_font_awesome.svg\"\n   sodipodi:docname=\"trash_font_awesome.svg\">\n  <metadata\n     id=\"metadata3751\">\n    <rdf:RDF>\n      <cc:Work\n         rdf:about=\"\">\n        <dc:format>image/svg+xml</dc:format>\n        <dc:type\n           rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\" />\n      </cc:Work>\n    </rdf:RDF>\n  </metadata>\n  <defs\n     id=\"defs3749\" />\n  <sodipodi:namedview\n     pagecolor=\"#ffffff\"\n     bordercolor=\"#666666\"\n     borderopacity=\"1\"\n     objecttolerance=\"10\"\n     gridtolerance=\"10\"\n     guidetolerance=\"10\"\n     inkscape:pageopacity=\"0\"\n     inkscape:pageshadow=\"2\"\n     inkscape:window-width=\"640\"\n     inkscape:window-height=\"480\"\n     id=\"namedview3747\"\n     showgrid=\"false\"\n     inkscape:zoom=\"0.13169643\"\n     inkscape:cx=\"896\"\n     inkscape:cy=\"896\"\n     inkscape:window-x=\"0\"\n     inkscape:window-y=\"25\"\n     inkscape:window-maximized=\"0\"\n     inkscape:current-layer=\"svg3741\" />\n  <g\n     transform=\"matrix(1,0,0,-1,197.42373,1255.0508)\"\n     id=\"g3743\">\n    <path\n       d=\"M 512,800 V 224 q 0,-14 -9,-23 -9,-9 -23,-9 h -64 q -14,0 -23,9 -9,9 -9,23 v 576 q 0,14 9,23 9,9 23,9 h 64 q 14,0 23,-9 9,-9 9,-23 z m 256,0 V 224 q 0,-14 -9,-23 -9,-9 -23,-9 h -64 q -14,0 -23,9 -9,9 -9,23 v 576 q 0,14 9,23 9,9 23,9 h 64 q 14,0 23,-9 9,-9 9,-23 z m 256,0 V 224 q 0,-14 -9,-23 -9,-9 -23,-9 h -64 q -14,0 -23,9 -9,9 -9,23 v 576 q 0,14 9,23 9,9 23,9 h 64 q 14,0 23,-9 9,-9 9,-23 z M 1152,76 v 948 H 256 V 76 Q 256,54 263,35.5 270,17 277.5,8.5 285,0 288,0 h 832 q 3,0 10.5,8.5 7.5,8.5 14.5,27 7,18.5 7,40.5 z M 480,1152 h 448 l -48,117 q -7,9 -17,11 H 546 q -10,-2 -17,-11 z m 928,-32 v -64 q 0,-14 -9,-23 -9,-9 -23,-9 h -96 V 76 q 0,-83 -47,-143.5 -47,-60.5 -113,-60.5 H 288 q -66,0 -113,58.5 Q 128,-11 128,72 v 952 H 32 q -14,0 -23,9 -9,9 -9,23 v 64 q 0,14 9,23 9,9 23,9 h 309 l 70,167 q 15,37 54,63 39,26 79,26 h 320 q 40,0 79,-26 39,-26 54,-63 l 70,-167 h 309 q 14,0 23,-9 9,-9 9,-23 z\"\n       id=\"path3745\"\n       inkscape:connector-curvature=\"0\"\n       style=\"fill:#000\" />\n  </g>\n</svg>\n",
-        "wikicommons": "https://upload.wikimedia.org/wikipedia/commons/7/7d/Trash_font_awesome.svg"
-    },
-    "edit": {
-        "name": "fa-edit-black.svg",
-        "path": "img/icons-svg",
-        "used": false,
-        "src": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIgogICB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgdmlld0JveD0iMCAtMjU2IDE4NTAgMTg1MCIKICAgaWQ9InN2ZzMwMjUiCiAgIHZlcnNpb249IjEuMSIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMC40OC4zLjEgcjk4ODYiCiAgIHdpZHRoPSIxNHB4IgogICBoZWlnaHQ9IjE0cHgiCiAgIHdpa2ljb21tb25zPSJodHRwczovL3VwbG9hZC53aWtpbWVkaWEub3JnL3dpa2lwZWRpYS9jb21tb25zLzQvNGMvRWRpdF9mb250X2F3ZXNvbWUuc3ZnIgogICBzb2RpcG9kaTpkb2NuYW1lPSJlZGl0X2ZvbnRfYXdlc29tZS5zdmciPgogIDxtZXRhZGF0YQogICAgIGlkPSJtZXRhZGF0YTMwMzUiPgogICAgPHJkZjpSREY+CiAgICAgIDxjYzpXb3JrCiAgICAgICAgIHJkZjphYm91dD0iIj4KICAgICAgICA8ZGM6Zm9ybWF0PmltYWdlL3N2Zyt4bWw8L2RjOmZvcm1hdD4KICAgICAgICA8ZGM6dHlwZQogICAgICAgICAgIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiIC8+CiAgICAgIDwvY2M6V29yaz4KICAgIDwvcmRmOlJERj4KICA8L21ldGFkYXRhPgogIDxkZWZzCiAgICAgaWQ9ImRlZnMzMDMzIiAvPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiM2NjY2NjYiCiAgICAgYm9yZGVyb3BhY2l0eT0iMSIKICAgICBvYmplY3R0b2xlcmFuY2U9IjEwIgogICAgIGdyaWR0b2xlcmFuY2U9IjEwIgogICAgIGd1aWRldG9sZXJhbmNlPSIxMCIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMCIKICAgICBpbmtzY2FwZTpwYWdlc2hhZG93PSIyIgogICAgIGlua3NjYXBlOndpbmRvdy13aWR0aD0iNjQwIgogICAgIGlua3NjYXBlOndpbmRvdy1oZWlnaHQ9IjQ4MCIKICAgICBpZD0ibmFtZWR2aWV3MzAzMSIKICAgICBzaG93Z3JpZD0iZmFsc2UiCiAgICAgaW5rc2NhcGU6em9vbT0iMC4xMzE2OTY0MyIKICAgICBpbmtzY2FwZTpjeD0iODk2IgogICAgIGlua3NjYXBlOmN5PSI4OTYiCiAgICAgaW5rc2NhcGU6d2luZG93LXg9IjAiCiAgICAgaW5rc2NhcGU6d2luZG93LXk9IjI1IgogICAgIGlua3NjYXBlOndpbmRvdy1tYXhpbWl6ZWQ9IjAiCiAgICAgaW5rc2NhcGU6Y3VycmVudC1sYXllcj0ic3ZnMzAyNSIgLz4KICA8ZwogICAgIHRyYW5zZm9ybT0ibWF0cml4KDEsMCwwLC0xLDMwLjM3Mjg4MSwxMzczLjc5NjYpIgogICAgIGlkPSJnMzAyNyI+CiAgICA8cGF0aAogICAgICAgZD0iTSA4ODgsMzUyIDEwMDQsNDY4IDg1Miw2MjAgNzM2LDUwNCB2IC01NiBoIDk2IHYgLTk2IGggNTYgeiBtIDQ0MCw3MjAgcSAtMTYsMTYgLTMzLC0xIEwgOTQ1LDcyMSBxIC0xNywtMTcgLTEsLTMzIDE2LC0xNiAzMywxIGwgMzUwLDM1MCBxIDE3LDE3IDEsMzMgeiBtIDgwLC01OTQgViAyODggUSAxNDA4LDE2OSAxMzIzLjUsODQuNSAxMjM5LDAgMTEyMCwwIEggMjg4IFEgMTY5LDAgODQuNSw4NC41IDAsMTY5IDAsMjg4IHYgODMyIFEgMCwxMjM5IDg0LjUsMTMyMy41IDE2OSwxNDA4IDI4OCwxNDA4IGggODMyIHEgNjMsMCAxMTcsLTI1IDE1LC03IDE4LC0yMyAzLC0xNyAtOSwtMjkgbCAtNDksLTQ5IHEgLTE0LC0xNCAtMzIsLTggLTIzLDYgLTQ1LDYgSCAyODggcSAtNjYsMCAtMTEzLC00NyAtNDcsLTQ3IC00NywtMTEzIFYgMjg4IHEgMCwtNjYgNDcsLTExMyA0NywtNDcgMTEzLC00NyBoIDgzMiBxIDY2LDAgMTEzLDQ3IDQ3LDQ3IDQ3LDExMyB2IDEyNiBxIDAsMTMgOSwyMiBsIDY0LDY0IHEgMTUsMTUgMzUsNyAyMCwtOCAyMCwtMjkgeiBNIDEzMTIsMTIxNiAxNjAwLDkyOCA5MjgsMjU2IEggNjQwIHYgMjg4IHogbSA0NDQsLTEzMiAtOTIsLTkyIC0yODgsMjg4IDkyLDkyIHEgMjgsMjggNjgsMjggNDAsMCA2OCwtMjggbCAxNTIsLTE1MiBxIDI4LC0yOCAyOCwtNjggMCwtNDAgLTI4LC02OCB6IgogICAgICAgaWQ9InBhdGgzMDI5IgogICAgICAgaW5rc2NhcGU6Y29ubmVjdG9yLWN1cnZhdHVyZT0iMCIKICAgICAgIHN0eWxlPSJmaWxsOiMwMDAiIC8+CiAgPC9nPgo8L3N2Zz4K",
-        "license": "CC BY-SA 3.0",
-        "group": "other",
-        "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<svg\n   xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n   xmlns:cc=\"http://creativecommons.org/ns#\"\n   xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n   xmlns:svg=\"http://www.w3.org/2000/svg\"\n   xmlns=\"http://www.w3.org/2000/svg\"\n   xmlns:sodipodi=\"http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd\"\n   xmlns:inkscape=\"http://www.inkscape.org/namespaces/inkscape\"\n   viewBox=\"0 -256 1850 1850\"\n   id=\"svg3025\"\n   version=\"1.1\"\n   inkscape:version=\"0.48.3.1 r9886\"\n   width=\"14px\"\n   height=\"14px\"\n   wikicommons=\"https://upload.wikimedia.org/wikipedia/commons/4/4c/Edit_font_awesome.svg\"\n   sodipodi:docname=\"edit_font_awesome.svg\">\n  <metadata\n     id=\"metadata3035\">\n    <rdf:RDF>\n      <cc:Work\n         rdf:about=\"\">\n        <dc:format>image/svg+xml</dc:format>\n        <dc:type\n           rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\" />\n      </cc:Work>\n    </rdf:RDF>\n  </metadata>\n  <defs\n     id=\"defs3033\" />\n  <sodipodi:namedview\n     pagecolor=\"#ffffff\"\n     bordercolor=\"#666666\"\n     borderopacity=\"1\"\n     objecttolerance=\"10\"\n     gridtolerance=\"10\"\n     guidetolerance=\"10\"\n     inkscape:pageopacity=\"0\"\n     inkscape:pageshadow=\"2\"\n     inkscape:window-width=\"640\"\n     inkscape:window-height=\"480\"\n     id=\"namedview3031\"\n     showgrid=\"false\"\n     inkscape:zoom=\"0.13169643\"\n     inkscape:cx=\"896\"\n     inkscape:cy=\"896\"\n     inkscape:window-x=\"0\"\n     inkscape:window-y=\"25\"\n     inkscape:window-maximized=\"0\"\n     inkscape:current-layer=\"svg3025\" />\n  <g\n     transform=\"matrix(1,0,0,-1,30.372881,1373.7966)\"\n     id=\"g3027\">\n    <path\n       d=\"M 888,352 1004,468 852,620 736,504 v -56 h 96 v -96 h 56 z m 440,720 q -16,16 -33,-1 L 945,721 q -17,-17 -1,-33 16,-16 33,1 l 350,350 q 17,17 1,33 z m 80,-594 V 288 Q 1408,169 1323.5,84.5 1239,0 1120,0 H 288 Q 169,0 84.5,84.5 0,169 0,288 v 832 Q 0,1239 84.5,1323.5 169,1408 288,1408 h 832 q 63,0 117,-25 15,-7 18,-23 3,-17 -9,-29 l -49,-49 q -14,-14 -32,-8 -23,6 -45,6 H 288 q -66,0 -113,-47 -47,-47 -47,-113 V 288 q 0,-66 47,-113 47,-47 113,-47 h 832 q 66,0 113,47 47,47 47,113 v 126 q 0,13 9,22 l 64,64 q 15,15 35,7 20,-8 20,-29 z M 1312,1216 1600,928 928,256 H 640 v 288 z m 444,-132 -92,-92 -288,288 92,92 q 28,28 68,28 40,0 68,-28 l 152,-152 q 28,-28 28,-68 0,-40 -28,-68 z\"\n       id=\"path3029\"\n       inkscape:connector-curvature=\"0\"\n       style=\"fill:#000\" />\n  </g>\n</svg>\n",
-        "wikicommons": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Edit_font_awesome.svg"
-    },
-    "add": {
-        "name": "plus-black.svg",
-        "path": "img/icons-svg",
-        "used": false,
-        "src": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTYuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiCgkgd2lkdGg9IjE0cHgiIGhlaWdodD0iMTRweCIgdmlld0JveD0iMCAwIDE0IDE0IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxNCAxNDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8cG9seWdvbiBmaWxsPSIjMDAwIiBwb2ludHM9IjE0LDUgOSw1IDksMCA1LDAgNSw1IDAsNSAwLDkgNSw5IDUsMTQgOSwxNCA5LDkgMTQsOSAiLz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPC9zdmc+Cg==",
-        "license": "CC0",
-        "group": "action",
-        "raw": "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n<svg version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\n\t width=\"14px\" height=\"14px\" viewBox=\"0 0 14 14\" style=\"enable-background:new 0 0 14 14;\" xml:space=\"preserve\">\n<polygon fill=\"#000\" points=\"14,5 9,5 9,0 5,0 5,5 0,5 0,9 5,9 5,14 9,14 9,9 14,9 \"/>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n</svg>\n",
-        "wikicommons": "https://jquerymobile.com/download/"
-    },
-    "cancel": {
-        "name": "fa-cancel-black.svg",
-        "path": "img/icons-svg",
-        "used": false,
-        "src": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIgogICB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgdmlld0JveD0iMCAtMjU2IDE3OTIgMTc5MiIKICAgaWQ9InN2ZzMwMDEiCiAgIHZlcnNpb249IjEuMSIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMC40OC4zLjEgcjk4ODYiCiAgIHdpZHRoPSIxNHB4IgogICBoZWlnaHQ9IjE0cHgiCiAgIHdpa2ljb21tb25zPSJodHRwczovL3VwbG9hZC53aWtpbWVkaWEub3JnL3dpa2lwZWRpYS9jb21tb25zL2QvZGUvUmVtb3ZlX2ZvbnRfYXdlc29tZS5zdmciCiAgIHNvZGlwb2RpOmRvY25hbWU9InJlbW92ZV9mb250X2F3ZXNvbWUuc3ZnIj4KICA8bWV0YWRhdGEKICAgICBpZD0ibWV0YWRhdGEzMDExIj4KICAgIDxyZGY6UkRGPgogICAgICA8Y2M6V29yawogICAgICAgICByZGY6YWJvdXQ9IiI+CiAgICAgICAgPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CiAgICAgICAgPGRjOnR5cGUKICAgICAgICAgICByZGY6cmVzb3VyY2U9Imh0dHA6Ly9wdXJsLm9yZy9kYy9kY21pdHlwZS9TdGlsbEltYWdlIiAvPgogICAgICA8L2NjOldvcms+CiAgICA8L3JkZjpSREY+CiAgPC9tZXRhZGF0YT4KICA8ZGVmcwogICAgIGlkPSJkZWZzMzAwOSIgLz4KICA8c29kaXBvZGk6bmFtZWR2aWV3CiAgICAgcGFnZWNvbG9yPSIjZmZmZmZmIgogICAgIGJvcmRlcmNvbG9yPSIjNjY2NjY2IgogICAgIGJvcmRlcm9wYWNpdHk9IjEiCiAgICAgb2JqZWN0dG9sZXJhbmNlPSIxMCIKICAgICBncmlkdG9sZXJhbmNlPSIxMCIKICAgICBndWlkZXRvbGVyYW5jZT0iMTAiCiAgICAgaW5rc2NhcGU6cGFnZW9wYWNpdHk9IjAiCiAgICAgaW5rc2NhcGU6cGFnZXNoYWRvdz0iMiIKICAgICBpbmtzY2FwZTp3aW5kb3ctd2lkdGg9IjY0MCIKICAgICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSI0ODAiCiAgICAgaWQ9Im5hbWVkdmlldzMwMDciCiAgICAgc2hvd2dyaWQ9ImZhbHNlIgogICAgIGlua3NjYXBlOnpvb209IjAuMTMxNjk2NDMiCiAgICAgaW5rc2NhcGU6Y3g9Ijg5NiIKICAgICBpbmtzY2FwZTpjeT0iODk2IgogICAgIGlua3NjYXBlOndpbmRvdy14PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy15PSIyNSIKICAgICBpbmtzY2FwZTp3aW5kb3ctbWF4aW1pemVkPSIwIgogICAgIGlua3NjYXBlOmN1cnJlbnQtbGF5ZXI9InN2ZzMwMDEiIC8+CiAgPGcKICAgICB0cmFuc2Zvcm09Im1hdHJpeCgxLDAsMCwtMSwyMDUuMDE2OTUsMTI2Mi42NDQxKSIKICAgICBpZD0iZzMwMDMiPgogICAgPHBhdGgKICAgICAgIGQ9Im0gMTI5OCwyMTQgcSAwLC00MCAtMjgsLTY4IEwgMTEzNCwxMCBxIC0yOCwtMjggLTY4LC0yOCAtNDAsMCAtNjgsMjggTCA3MDQsMzA0IDQxMCwxMCBxIC0yOCwtMjggLTY4LC0yOCAtNDAsMCAtNjgsMjggTCAxMzgsMTQ2IHEgLTI4LDI4IC0yOCw2OCAwLDQwIDI4LDY4IEwgNDMyLDU3NiAxMzgsODcwIHEgLTI4LDI4IC0yOCw2OCAwLDQwIDI4LDY4IGwgMTM2LDEzNiBxIDI4LDI4IDY4LDI4IDQwLDAgNjgsLTI4IGwgMjk0LC0yOTQgMjk0LDI5NCBxIDI4LDI4IDY4LDI4IDQwLDAgNjgsLTI4IGwgMTM2LC0xMzYgcSAyOCwtMjggMjgsLTY4IDAsLTQwIC0yOCwtNjggTCA5NzYsNTc2IDEyNzAsMjgyIHEgMjgsLTI4IDI4LC02OCB6IgogICAgICAgaWQ9InBhdGgzMDA1IgogICAgICAgaW5rc2NhcGU6Y29ubmVjdG9yLWN1cnZhdHVyZT0iMCIKICAgICAgIHN0eWxlPSJmaWxsOiMwMDAiIC8+CiAgPC9nPgo8L3N2Zz4K",
-        "license": "CC BY-SA 3.0",
-        "group": "action",
-        "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<svg\n   xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n   xmlns:cc=\"http://creativecommons.org/ns#\"\n   xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n   xmlns:svg=\"http://www.w3.org/2000/svg\"\n   xmlns=\"http://www.w3.org/2000/svg\"\n   xmlns:sodipodi=\"http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd\"\n   xmlns:inkscape=\"http://www.inkscape.org/namespaces/inkscape\"\n   viewBox=\"0 -256 1792 1792\"\n   id=\"svg3001\"\n   version=\"1.1\"\n   inkscape:version=\"0.48.3.1 r9886\"\n   width=\"14px\"\n   height=\"14px\"\n   wikicommons=\"https://upload.wikimedia.org/wikipedia/commons/d/de/Remove_font_awesome.svg\"\n   sodipodi:docname=\"remove_font_awesome.svg\">\n  <metadata\n     id=\"metadata3011\">\n    <rdf:RDF>\n      <cc:Work\n         rdf:about=\"\">\n        <dc:format>image/svg+xml</dc:format>\n        <dc:type\n           rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\" />\n      </cc:Work>\n    </rdf:RDF>\n  </metadata>\n  <defs\n     id=\"defs3009\" />\n  <sodipodi:namedview\n     pagecolor=\"#ffffff\"\n     bordercolor=\"#666666\"\n     borderopacity=\"1\"\n     objecttolerance=\"10\"\n     gridtolerance=\"10\"\n     guidetolerance=\"10\"\n     inkscape:pageopacity=\"0\"\n     inkscape:pageshadow=\"2\"\n     inkscape:window-width=\"640\"\n     inkscape:window-height=\"480\"\n     id=\"namedview3007\"\n     showgrid=\"false\"\n     inkscape:zoom=\"0.13169643\"\n     inkscape:cx=\"896\"\n     inkscape:cy=\"896\"\n     inkscape:window-x=\"0\"\n     inkscape:window-y=\"25\"\n     inkscape:window-maximized=\"0\"\n     inkscape:current-layer=\"svg3001\" />\n  <g\n     transform=\"matrix(1,0,0,-1,205.01695,1262.6441)\"\n     id=\"g3003\">\n    <path\n       d=\"m 1298,214 q 0,-40 -28,-68 L 1134,10 q -28,-28 -68,-28 -40,0 -68,28 L 704,304 410,10 q -28,-28 -68,-28 -40,0 -68,28 L 138,146 q -28,28 -28,68 0,40 28,68 L 432,576 138,870 q -28,28 -28,68 0,40 28,68 l 136,136 q 28,28 68,28 40,0 68,-28 l 294,-294 294,294 q 28,28 68,28 40,0 68,-28 l 136,-136 q 28,-28 28,-68 0,-40 -28,-68 L 976,576 1270,282 q 28,-28 28,-68 z\"\n       id=\"path3005\"\n       inkscape:connector-curvature=\"0\"\n       style=\"fill:#000\" />\n  </g>\n</svg>\n",
-        "wikicommons": "https://upload.wikimedia.org/wikipedia/commons/d/de/Remove_font_awesome.svg"
-    },
-    "load":{
-        "name": "fa-folder-open-black.svg",
-        "path": "img/icons-svg",
-        "used": false,
-        "src": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIgogICB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgdmlld0JveD0iMCAtMjU2IDE5NTAgMTk1MCIKICAgaWQ9InN2ZzMwMDEiCiAgIHZlcnNpb249IjEuMSIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMC40OC4zLjEgcjk4ODYiCiAgIHdpZHRoPSIxNHB4IgogICBoZWlnaHQ9IjE0cHgiCiAgIHdpa2ljb21tb25zPSJodHRwczovL3VwbG9hZC53aWtpbWVkaWEub3JnL3dpa2lwZWRpYS9jb21tb25zLzMvM2EvRm9sZGVyX29wZW5fYWx0X2ZvbnRfYXdlc29tZS5zdmciCiAgIHNvZGlwb2RpOmRvY25hbWU9ImZvbGRlcl9vcGVuX2FsdF9mb250X2F3ZXNvbWUuc3ZnIj4KICA8bWV0YWRhdGEKICAgICBpZD0ibWV0YWRhdGEzMDExIj4KICAgIDxyZGY6UkRGPgogICAgICA8Y2M6V29yawogICAgICAgICByZGY6YWJvdXQ9IiI+CiAgICAgICAgPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CiAgICAgICAgPGRjOnR5cGUKICAgICAgICAgICByZGY6cmVzb3VyY2U9Imh0dHA6Ly9wdXJsLm9yZy9kYy9kY21pdHlwZS9TdGlsbEltYWdlIiAvPgogICAgICA8L2NjOldvcms+CiAgICA8L3JkZjpSREY+CiAgPC9tZXRhZGF0YT4KICA8ZGVmcwogICAgIGlkPSJkZWZzMzAwOSIgLz4KICA8c29kaXBvZGk6bmFtZWR2aWV3CiAgICAgcGFnZWNvbG9yPSIjZmZmZmZmIgogICAgIGJvcmRlcmNvbG9yPSIjNjY2NjY2IgogICAgIGJvcmRlcm9wYWNpdHk9IjEiCiAgICAgb2JqZWN0dG9sZXJhbmNlPSIxMCIKICAgICBncmlkdG9sZXJhbmNlPSIxMCIKICAgICBndWlkZXRvbGVyYW5jZT0iMTAiCiAgICAgaW5rc2NhcGU6cGFnZW9wYWNpdHk9IjAiCiAgICAgaW5rc2NhcGU6cGFnZXNoYWRvdz0iMiIKICAgICBpbmtzY2FwZTp3aW5kb3ctd2lkdGg9IjY0MCIKICAgICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSI0ODAiCiAgICAgaWQ9Im5hbWVkdmlldzMwMDciCiAgICAgc2hvd2dyaWQ9ImZhbHNlIgogICAgIGlua3NjYXBlOnpvb209IjAuMTMxNjk2NDMiCiAgICAgaW5rc2NhcGU6Y3g9Ijk1NC41IgogICAgIGlua3NjYXBlOmN5PSI4OTYiCiAgICAgaW5rc2NhcGU6d2luZG93LXg9IjAiCiAgICAgaW5rc2NhcGU6d2luZG93LXk9IjI1IgogICAgIGlua3NjYXBlOndpbmRvdy1tYXhpbWl6ZWQ9IjAiCiAgICAgaW5rc2NhcGU6Y3VycmVudC1sYXllcj0ic3ZnMzAwMSIgLz4KICA8ZwogICAgIHRyYW5zZm9ybT0ibWF0cml4KDEsMCwwLC0xLDMwLjM3Mjg4MSwxNDQzLjQyMzcpIgogICAgIGlkPSJnMzAwMyI+CiAgICA8cGF0aAogICAgICAgZD0ibSAxNzgxLDYwNSBxIDAsMzUgLTUzLDM1IEggNjQwIFEgNjAwLDY0MCA1NTQuNSw2MTguNSA1MDksNTk3IDQ4Myw1NjYgTCAxODksMjAzIHEgLTE4LC0yNCAtMTgsLTQwIDAsLTM1IDUzLC0zNSBoIDEwODggcSA0MCwwIDg2LDIyIDQ2LDIyIDcxLDUzIGwgMjk0LDM2MyBxIDE4LDIyIDE4LDM5IHogTSA2NDAsNzY4IGggNzY4IHYgMTYwIHEgMCw0MCAtMjgsNjggLTI4LDI4IC02OCwyOCBIIDczNiBxIC00MCwwIC02OCwyOCAtMjgsMjggLTI4LDY4IHYgNjQgcSAwLDQwIC0yOCw2OCAtMjgsMjggLTY4LDI4IEggMjI0IHEgLTQwLDAgLTY4LC0yOCAtMjgsLTI4IC0yOCwtNjggViAzMzEgbCAyNTYsMzE1IHEgNDQsNTMgMTE2LDg3LjUgNzIsMzQuNSAxNDAsMzQuNSB6IE0gMTkwOSw2MDUgcSAwLC02MiAtNDYsLTEyMCBMIDE1NjgsMTIyIFEgMTUyNSw2OSAxNDUyLDM0LjUgMTM3OSwwIDEzMTIsMCBIIDIyNCBRIDEzMiwwIDY2LDY2IDAsMTMyIDAsMjI0IHYgOTYwIHEgMCw5MiA2NiwxNTggNjYsNjYgMTU4LDY2IGggMzIwIHEgOTIsMCAxNTgsLTY2IDY2LC02NiA2NiwtMTU4IHYgLTMyIGggNTQ0IHEgOTIsMCAxNTgsLTY2IDY2LC02NiA2NiwtMTU4IFYgNzY4IGggMTkyIHEgNTQsMCA5OSwtMjQuNSA0NSwtMjQuNSA2NywtNzAuNSAxNSwtMzIgMTUsLTY4IHoiCiAgICAgICBpZD0icGF0aDMwMDUiCiAgICAgICBpbmtzY2FwZTpjb25uZWN0b3ItY3VydmF0dXJlPSIwIgogICAgICAgc3R5bGU9ImZpbGw6IzAwMCIgLz4KICA8L2c+Cjwvc3ZnPgo=",
-        "license": "CC BY-SA 3.0",
-        "group": "main",
-        "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<svg\n   xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n   xmlns:cc=\"http://creativecommons.org/ns#\"\n   xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n   xmlns:svg=\"http://www.w3.org/2000/svg\"\n   xmlns=\"http://www.w3.org/2000/svg\"\n   xmlns:sodipodi=\"http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd\"\n   xmlns:inkscape=\"http://www.inkscape.org/namespaces/inkscape\"\n   viewBox=\"0 -256 1950 1950\"\n   id=\"svg3001\"\n   version=\"1.1\"\n   inkscape:version=\"0.48.3.1 r9886\"\n   width=\"14px\"\n   height=\"14px\"\n   wikicommons=\"https://upload.wikimedia.org/wikipedia/commons/3/3a/Folder_open_alt_font_awesome.svg\"\n   sodipodi:docname=\"folder_open_alt_font_awesome.svg\">\n  <metadata\n     id=\"metadata3011\">\n    <rdf:RDF>\n      <cc:Work\n         rdf:about=\"\">\n        <dc:format>image/svg+xml</dc:format>\n        <dc:type\n           rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\" />\n      </cc:Work>\n    </rdf:RDF>\n  </metadata>\n  <defs\n     id=\"defs3009\" />\n  <sodipodi:namedview\n     pagecolor=\"#ffffff\"\n     bordercolor=\"#666666\"\n     borderopacity=\"1\"\n     objecttolerance=\"10\"\n     gridtolerance=\"10\"\n     guidetolerance=\"10\"\n     inkscape:pageopacity=\"0\"\n     inkscape:pageshadow=\"2\"\n     inkscape:window-width=\"640\"\n     inkscape:window-height=\"480\"\n     id=\"namedview3007\"\n     showgrid=\"false\"\n     inkscape:zoom=\"0.13169643\"\n     inkscape:cx=\"954.5\"\n     inkscape:cy=\"896\"\n     inkscape:window-x=\"0\"\n     inkscape:window-y=\"25\"\n     inkscape:window-maximized=\"0\"\n     inkscape:current-layer=\"svg3001\" />\n  <g\n     transform=\"matrix(1,0,0,-1,30.372881,1443.4237)\"\n     id=\"g3003\">\n    <path\n       d=\"m 1781,605 q 0,35 -53,35 H 640 Q 600,640 554.5,618.5 509,597 483,566 L 189,203 q -18,-24 -18,-40 0,-35 53,-35 h 1088 q 40,0 86,22 46,22 71,53 l 294,363 q 18,22 18,39 z M 640,768 h 768 v 160 q 0,40 -28,68 -28,28 -68,28 H 736 q -40,0 -68,28 -28,28 -28,68 v 64 q 0,40 -28,68 -28,28 -68,28 H 224 q -40,0 -68,-28 -28,-28 -28,-68 V 331 l 256,315 q 44,53 116,87.5 72,34.5 140,34.5 z M 1909,605 q 0,-62 -46,-120 L 1568,122 Q 1525,69 1452,34.5 1379,0 1312,0 H 224 Q 132,0 66,66 0,132 0,224 v 960 q 0,92 66,158 66,66 158,66 h 320 q 92,0 158,-66 66,-66 66,-158 v -32 h 544 q 92,0 158,-66 66,-66 66,-158 V 768 h 192 q 54,0 99,-24.5 45,-24.5 67,-70.5 15,-32 15,-68 z\"\n       id=\"path3005\"\n       inkscape:connector-curvature=\"0\"\n       style=\"fill:#000\" />\n  </g>\n</svg>\n",
-        "wikicommons": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Folder_open_alt_font_awesome.svg"
-    },
-    "save": {
-        "name": "fa-file-save-black.svg",
-        "path": "img/icons-svg",
-        "used": false,
-        "src": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIgogICB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgdmlld0JveD0iMCAtMjU2IDE3OTIgMTc5MiIKICAgaWQ9InN2ZzMwMDEiCiAgIHZlcnNpb249IjEuMSIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMC40OC4zLjEgcjk4ODYiCiAgIHdpZHRoPSIxNHB4IgogICBoZWlnaHQ9IjE0cHgiCiAgIHdpa2ljb21tb25zPSJodHRwczovL3VwbG9hZC53aWtpbWVkaWEub3JnL3dpa2lwZWRpYS9jb21tb25zLzIvMjAvU2F2ZV9mb250X2F3ZXNvbWUuc3ZnIgogICBzb2RpcG9kaTpkb2NuYW1lPSJzYXZlX2ZvbnRfYXdlc29tZS5zdmciPgogIDxtZXRhZGF0YQogICAgIGlkPSJtZXRhZGF0YTMwMTEiPgogICAgPHJkZjpSREY+CiAgICAgIDxjYzpXb3JrCiAgICAgICAgIHJkZjphYm91dD0iIj4KICAgICAgICA8ZGM6Zm9ybWF0PmltYWdlL3N2Zyt4bWw8L2RjOmZvcm1hdD4KICAgICAgICA8ZGM6dHlwZQogICAgICAgICAgIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiIC8+CiAgICAgIDwvY2M6V29yaz4KICAgIDwvcmRmOlJERj4KICA8L21ldGFkYXRhPgogIDxkZWZzCiAgICAgaWQ9ImRlZnMzMDA5IiAvPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiM2NjY2NjYiCiAgICAgYm9yZGVyb3BhY2l0eT0iMSIKICAgICBvYmplY3R0b2xlcmFuY2U9IjEwIgogICAgIGdyaWR0b2xlcmFuY2U9IjEwIgogICAgIGd1aWRldG9sZXJhbmNlPSIxMCIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMCIKICAgICBpbmtzY2FwZTpwYWdlc2hhZG93PSIyIgogICAgIGlua3NjYXBlOndpbmRvdy13aWR0aD0iNjQwIgogICAgIGlua3NjYXBlOndpbmRvdy1oZWlnaHQ9IjQ4MCIKICAgICBpZD0ibmFtZWR2aWV3MzAwNyIKICAgICBzaG93Z3JpZD0iZmFsc2UiCiAgICAgaW5rc2NhcGU6em9vbT0iMC4xMzE2OTY0MyIKICAgICBpbmtzY2FwZTpjeD0iODk2IgogICAgIGlua3NjYXBlOmN5PSI4OTYiCiAgICAgaW5rc2NhcGU6d2luZG93LXg9IjAiCiAgICAgaW5rc2NhcGU6d2luZG93LXk9IjI1IgogICAgIGlua3NjYXBlOndpbmRvdy1tYXhpbWl6ZWQ9IjAiCiAgICAgaW5rc2NhcGU6Y3VycmVudC1sYXllcj0ic3ZnMzAwMSIgLz4KICA8ZwogICAgIHRyYW5zZm9ybT0ibWF0cml4KDEsMCwwLC0xLDEyOS4wODQ3NSwxMjcwLjIzNzMpIgogICAgIGlkPSJnMzAwMyI+CiAgICA8cGF0aAogICAgICAgZD0ibSAzODQsMCBoIDc2OCBWIDM4NCBIIDM4NCBWIDAgeiBtIDg5NiwwIGggMTI4IHYgODk2IHEgMCwxNCAtMTAsMzguNSAtMTAsMjQuNSAtMjAsMzQuNSBsIC0yODEsMjgxIHEgLTEwLDEwIC0zNCwyMCAtMjQsMTAgLTM5LDEwIFYgODY0IHEgMCwtNDAgLTI4LC02OCAtMjgsLTI4IC02OCwtMjggSCAzNTIgcSAtNDAsMCAtNjgsMjggLTI4LDI4IC0yOCw2OCB2IDQxNiBIIDEyOCBWIDAgaCAxMjggdiA0MTYgcSAwLDQwIDI4LDY4IDI4LDI4IDY4LDI4IGggODMyIHEgNDAsMCA2OCwtMjggMjgsLTI4IDI4LC02OCBWIDAgeiBNIDg5Niw5MjggdiAzMjAgcSAwLDEzIC05LjUsMjIuNSAtOS41LDkuNSAtMjIuNSw5LjUgSCA2NzIgcSAtMTMsMCAtMjIuNSwtOS41IFEgNjQwLDEyNjEgNjQwLDEyNDggViA5MjggcSAwLC0xMyA5LjUsLTIyLjUgUSA2NTksODk2IDY3Miw4OTYgaCAxOTIgcSAxMywwIDIyLjUsOS41IDkuNSw5LjUgOS41LDIyLjUgeiBtIDY0MCwtMzIgViAtMzIgcSAwLC00MCAtMjgsLTY4IC0yOCwtMjggLTY4LC0yOCBIIDk2IHEgLTQwLDAgLTY4LDI4IC0yOCwyOCAtMjgsNjggdiAxMzQ0IHEgMCw0MCAyOCw2OCAyOCwyOCA2OCwyOCBoIDkyOCBxIDQwLDAgODgsLTIwIDQ4LC0yMCA3NiwtNDggbCAyODAsLTI4MCBxIDI4LC0yOCA0OCwtNzYgMjAsLTQ4IDIwLC04OCB6IgogICAgICAgaWQ9InBhdGgzMDA1IgogICAgICAgaW5rc2NhcGU6Y29ubmVjdG9yLWN1cnZhdHVyZT0iMCIKICAgICAgIHN0eWxlPSJmaWxsOiMwMDAiIC8+CiAgPC9nPgo8L3N2Zz4K",
-        "license": "CC BY-SA 3.0",
-        "group": "other",
-        "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<svg\n   xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n   xmlns:cc=\"http://creativecommons.org/ns#\"\n   xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n   xmlns:svg=\"http://www.w3.org/2000/svg\"\n   xmlns=\"http://www.w3.org/2000/svg\"\n   xmlns:sodipodi=\"http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd\"\n   xmlns:inkscape=\"http://www.inkscape.org/namespaces/inkscape\"\n   viewBox=\"0 -256 1792 1792\"\n   id=\"svg3001\"\n   version=\"1.1\"\n   inkscape:version=\"0.48.3.1 r9886\"\n   width=\"14px\"\n   height=\"14px\"\n   wikicommons=\"https://upload.wikimedia.org/wikipedia/commons/2/20/Save_font_awesome.svg\"\n   sodipodi:docname=\"save_font_awesome.svg\">\n  <metadata\n     id=\"metadata3011\">\n    <rdf:RDF>\n      <cc:Work\n         rdf:about=\"\">\n        <dc:format>image/svg+xml</dc:format>\n        <dc:type\n           rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\" />\n      </cc:Work>\n    </rdf:RDF>\n  </metadata>\n  <defs\n     id=\"defs3009\" />\n  <sodipodi:namedview\n     pagecolor=\"#ffffff\"\n     bordercolor=\"#666666\"\n     borderopacity=\"1\"\n     objecttolerance=\"10\"\n     gridtolerance=\"10\"\n     guidetolerance=\"10\"\n     inkscape:pageopacity=\"0\"\n     inkscape:pageshadow=\"2\"\n     inkscape:window-width=\"640\"\n     inkscape:window-height=\"480\"\n     id=\"namedview3007\"\n     showgrid=\"false\"\n     inkscape:zoom=\"0.13169643\"\n     inkscape:cx=\"896\"\n     inkscape:cy=\"896\"\n     inkscape:window-x=\"0\"\n     inkscape:window-y=\"25\"\n     inkscape:window-maximized=\"0\"\n     inkscape:current-layer=\"svg3001\" />\n  <g\n     transform=\"matrix(1,0,0,-1,129.08475,1270.2373)\"\n     id=\"g3003\">\n    <path\n       d=\"m 384,0 h 768 V 384 H 384 V 0 z m 896,0 h 128 v 896 q 0,14 -10,38.5 -10,24.5 -20,34.5 l -281,281 q -10,10 -34,20 -24,10 -39,10 V 864 q 0,-40 -28,-68 -28,-28 -68,-28 H 352 q -40,0 -68,28 -28,28 -28,68 v 416 H 128 V 0 h 128 v 416 q 0,40 28,68 28,28 68,28 h 832 q 40,0 68,-28 28,-28 28,-68 V 0 z M 896,928 v 320 q 0,13 -9.5,22.5 -9.5,9.5 -22.5,9.5 H 672 q -13,0 -22.5,-9.5 Q 640,1261 640,1248 V 928 q 0,-13 9.5,-22.5 Q 659,896 672,896 h 192 q 13,0 22.5,9.5 9.5,9.5 9.5,22.5 z m 640,-32 V -32 q 0,-40 -28,-68 -28,-28 -68,-28 H 96 q -40,0 -68,28 -28,28 -28,68 v 1344 q 0,40 28,68 28,28 68,28 h 928 q 40,0 88,-20 48,-20 76,-48 l 280,-280 q 28,-28 48,-76 20,-48 20,-88 z\"\n       id=\"path3005\"\n       inkscape:connector-curvature=\"0\"\n       style=\"fill:#000\" />\n  </g>\n</svg>\n",
-        "wikicommons": "https://upload.wikimedia.org/wikipedia/commons/2/20/Save_font_awesome.svg"
-    },
-    "moveup": {
-        "name": "arrow-u-black.svg",
-        "path": "img/icons-svg",
-        "used": false,
-        "src": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTYuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiCgkgd2lkdGg9IjE0cHgiIGhlaWdodD0iMTRweCIgdmlld0JveD0iMCAwIDE0IDE0IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxNCAxNDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8cG9seWdvbiBmaWxsPSIjMDAwIiBwb2ludHM9IjcsMCAwLDcgNSw3IDUsMTQgOSwxNCA5LDcgMTQsNyAiLz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPC9zdmc+Cg==",
-        "license": "CC0",
-        "group": "arrow",
-        "raw": "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n<svg version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\n\t width=\"14px\" height=\"14px\" viewBox=\"0 0 14 14\" style=\"enable-background:new 0 0 14 14;\" xml:space=\"preserve\">\n<polygon fill=\"#000\" points=\"7,0 0,7 5,7 5,14 9,14 9,7 14,7 \"/>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n</svg>\n",
-        "wikicommons": "https://jquerymobile.com/download/"
-    },
-    "movedown": {
-        "name": "arrow-d-r-white.svg",
-        "path": "img/icons-svg",
-        "used": false,
-        "src": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTYuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiCgkgd2lkdGg9IjE0cHgiIGhlaWdodD0iMTRweCIgdmlld0JveD0iMCAwIDE0IDE0IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAxNCAxNDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8cG9seWdvbiBmaWxsPSIjRkZGIiBwb2ludHM9IjEwLjUsNy41IDMsMCAwLDMgNy41LDEwLjUgNCwxNCAxNCwxNCAxNCw0ICIvPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K",
-        "license": "CC0",
-        "group": "arrow",
-        "raw": "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n<svg version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\n\t width=\"14px\" height=\"14px\" viewBox=\"0 0 14 14\" style=\"enable-background:new 0 0 14 14;\" xml:space=\"preserve\">\n<polygon fill=\"#FFF\" points=\"10.5,7.5 3,0 0,3 7.5,10.5 4,14 14,14 14,4 \"/>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n<g>\n</g>\n</svg>\n",
-        "wikicommons": "https://jquerymobile.com/download/"
-    }
-  }
-});
+
 JSONEditor.defaults.iconlibs.jqueryui = JSONEditor.AbstractIconLib.extend({
   mapping: {
     collapse: 'triangle-1-s',
@@ -7822,6 +7531,7 @@ JSONEditor.defaults.iconlibs.jqueryui = JSONEditor.AbstractIconLib.extend({
   },
   icon_prefix: 'ui-icon ui-icon-'
 });
+
 JSONEditor.defaults.templates["default"] = function() {
   return {
     compile: function(template) {
@@ -7838,7 +7548,7 @@ JSONEditor.defaults.templates["default"] = function() {
         var p = matches[i].replace(/[{}]+/g,'').trim().split('.');
         var n = p.length;
         var func;
-        
+
         if(n > 1) {
           var cur;
           func = function(vars) {
@@ -7856,7 +7566,7 @@ JSONEditor.defaults.templates["default"] = function() {
             return vars[p];
           };
         }
-        
+
         replacements.push({
           s: matches[i],
           r: func
@@ -7879,6 +7589,7 @@ JSONEditor.defaults.templates["default"] = function() {
     }
   };
 };
+
 JSONEditor.defaults.templates.ejs = function() {
   if(!window.EJS) return false;
 
@@ -7894,9 +7605,11 @@ JSONEditor.defaults.templates.ejs = function() {
     }
   };
 };
+
 JSONEditor.defaults.templates.handlebars = function() {
   return window.Handlebars;
 };
+
 JSONEditor.defaults.templates.hogan = function() {
   if(!window.Hogan) return false;
 
@@ -7909,6 +7622,7 @@ JSONEditor.defaults.templates.hogan = function() {
     }
   };
 };
+
 JSONEditor.defaults.templates.markup = function() {
   if(!window.Mark || !window.Mark.up) return false;
 
@@ -7920,6 +7634,7 @@ JSONEditor.defaults.templates.markup = function() {
     }
   };
 };
+
 JSONEditor.defaults.templates.mustache = function() {
   if(!window.Mustache) return false;
 
@@ -7931,9 +7646,11 @@ JSONEditor.defaults.templates.mustache = function() {
     }
   };
 };
+
 JSONEditor.defaults.templates.swig = function() {
   return window.swig;
 };
+
 JSONEditor.defaults.templates.underscore = function() {
   if(!window._) return false;
 
@@ -7945,19 +7662,15 @@ JSONEditor.defaults.templates.underscore = function() {
     }
   };
 };
-// Set the default theme
-JSONEditor.defaults.theme = 'html';
 
 // Set the default theme
-//JSONEditor.defaults.iconlib = 'icons4menu';
+JSONEditor.defaults.theme = 'html';
 
 // Set the default template engine
 JSONEditor.defaults.template = 'default';
 
 // Default options when initializing JSON Editor
-JSONEditor.defaults.options = {
-  "iconlib":"icons4menu"
-};
+JSONEditor.defaults.options = {};
 
 // String translate function
 JSONEditor.defaults.translate = function(key, variables) {
@@ -8226,7 +7939,7 @@ JSONEditor.defaults.resolvers.unshift(function(schema) {
 // Use the table editor for arrays with the format set to `table`
 JSONEditor.defaults.resolvers.unshift(function(schema) {
   // Type `array` with format set to `table`
-  if(schema.type === "array" && schema.format === "table") {
+  if(schema.type == "array" && schema.format == "table") {
     return "table";
   }
 });
@@ -8263,6 +7976,7 @@ JSONEditor.defaults.resolvers.unshift(function(schema) {
   // If this schema uses `oneOf` or `anyOf`
   if(schema.oneOf || schema.anyOf) return "multiple";
 });
+
 /**
  * This is a small wrapper for using JSON Editor like a typical jQuery plugin.
  */
@@ -8270,13 +7984,13 @@ JSONEditor.defaults.resolvers.unshift(function(schema) {
   if(window.jQuery || window.Zepto) {
     var $ = window.jQuery || window.Zepto;
     $.jsoneditor = JSONEditor.defaults;
-    
+
     $.fn.jsoneditor = function(options) {
       var self = this;
       var editor = this.data('jsoneditor');
       if(options === 'value') {
         if(!editor) throw "Must initialize jsoneditor before getting/setting the value";
-        
+
         // Set value
         if(arguments.length > 1) {
           editor.setValue(arguments[1]);
@@ -8288,7 +8002,7 @@ JSONEditor.defaults.resolvers.unshift(function(schema) {
       }
       else if(options === 'validate') {
         if(!editor) throw "Must initialize jsoneditor before validating";
-        
+
         // Validate a specific value
         if(arguments.length > 1) {
           return editor.validate(arguments[1]);
@@ -8309,11 +8023,11 @@ JSONEditor.defaults.resolvers.unshift(function(schema) {
         if(editor) {
           editor.destroy();
         }
-        
+
         // Create editor
         editor = new JSONEditor(this.get(0),options);
         this.data('jsoneditor',editor);
-        
+
         // Setup event listeners
         editor.on('change',function() {
           self.trigger('change');
@@ -8322,10 +8036,13 @@ JSONEditor.defaults.resolvers.unshift(function(schema) {
           self.trigger('ready');
         });
       }
-      
+
       return this;
     };
   }
 })();
+
   window.JSONEditor = JSONEditor;
 })();
+
+//# sourceMappingURL=jsoneditor.js.map

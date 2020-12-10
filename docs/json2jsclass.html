@@ -18,13 +18,13 @@
 	var vDataJSON = {};
     // Set the default CSS theme and icon library globally
     JSONEditor.defaults.theme = 'bootstrap3';
-    JSONEditor.defaults.iconlib = 'fontawesome4';
+    //JSONEditor.defaults.iconlib = 'icons4menu';
 
     function saveFile2HDD(pFilename,pContent) {
       var file = new File([pContent], {type: "text/plain;charset=utf-8"});
       saveAs(file,pFilename);
     }
-	
+
     </script>
     <!-- Load SCHEMAS: vSchemaID = "class_schema" -->
     <script src="schema/class_schema.js"></script>
@@ -33,7 +33,7 @@
   	<div>
     	<h1>UML Class Editor - JSON</h1>
 
-  
+
     <button id='submit' style="display:none">Submit (console.log)</button>
     <button id='restore'>Restore to Default</button>
     <button id='enable_disable' style="display:none">Disable/Enable Form</button>

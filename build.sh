@@ -1,6 +1,9 @@
 #!/bin/sh
 outfile="dist/bundle.js"
 minfile="dist/bundle.min.js"
+outfile="dist/jsoneditor_new.js"
+minfile="dist/jsoneditor.min.js"
+docslib="docs/js/jsoneditor.js"
 # License & version info, start the containing closure
 cat src/intro.js > $outfile
 # Simple inheritance
@@ -30,4 +33,5 @@ cat src/outro.js >> $outfile
 # Minify the code
 uglifyjs $outfile --source-map -mc -o $minfile
 # DOCTOC for Table of Contents in README.md
+cp $outfile $docslib
 doctoc README.md

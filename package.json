@@ -1,19 +1,19 @@
 {
-  "name": "json-editor-fs",
-  "title": "JSONEditorFS",
-  "description": "JSON Schema based editor",
-  "version": "0.7.28",
+  "name": "json-editor-dorn",
+  "title": "JSONEditorDorn",
+  "description": "JSON Schema based editor by Jeremy Dorn - Fork",
+  "version": "0.8.0",
   "main": "dist/jsoneditor.js",
   "author": {
-    "name": "Jeremy Dorn - forked by Engelbert Niehaus",
-    "url": "http://niebert.github.io/json-editor"
+    "name": "Jeremy Dorn - forked by Bert Niehaus",
+    "url": "http://niebert.github.io/json-editor-dorn"
   },
   "bugs": {
-    "url": "https://github.com/niebert/json-editor/issues"
+    "url": "https://github.com/niebert/json-editor-dorn/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/niebert/json-editor.git"
+    "url": "https://github.com/niebert/json-editor-dorn.git"
   },
   "keywords": [
     "json",

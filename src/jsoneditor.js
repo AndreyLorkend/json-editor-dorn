@@ -49,6 +49,7 @@
   require("./themes/jsoneditor.barebones-theme.js");
 
   //--- PART 4: ICONLIBS ---
+  require("./iconlibs/icons4menu.js");
   require("./iconlibs/bootstrap2.js");
   require("./iconlibs/bootstrap3.js");
   require("./iconlibs/fontawesome3.js");
@@ -70,7 +71,7 @@
   //--- PART 6: DEFAULT and JQUERY Wrapper
   // "defaults.js");"  Set the defaults for JSON editor
   require("./defaults.js");
-  // "jquery.js"  Wrapper for $.fn style initialization 
+  // "jquery.js"  Wrapper for $.fn style initialization
   require("./jquery.js");
 
   window.JSONEditor = JSONEditor;

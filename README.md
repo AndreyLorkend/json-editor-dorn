@@ -34,7 +34,13 @@ The JSON to Schema generator is stored in `docs/` directory of this repository, 
 
 
   - [Changes in Fork:](#changes-in-fork)
+  - [Next steps/ToDo](#next-stepstodo)
+- [Installation](#installation)
+  - [Migration from  build process](#migration-from--build-process)
+  - [Package Installation of Browserify and Watchify - Alternative](#package-installation-of-browserify-and-watchify---alternative)
+  - [Start Watching the Files with Watchify](#start-watching-the-files-with-watchify)
   - [JSON Editor used in the following WebApp](#json-editor-used-in-the-following-webapp)
+- [Documentation](#documentation)
   - [Resources for the Fork](#resources-for-the-fork)
 - [Requirements](#requirements)
   - [Optional Requirements](#optional-requirements)

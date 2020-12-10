@@ -1,27 +1,32 @@
 // Set the default theme
 JSONEditor.defaults.theme = 'html';
 
+// Set the default theme
+//JSONEditor.defaults.iconlib = 'icons4menu';
+
 // Set the default template engine
 JSONEditor.defaults.template = 'default';
 
 // Default options when initializing JSON Editor
-JSONEditor.defaults.options = {};
+JSONEditor.defaults.options = {
+  "iconlib":"icons4menu"
+};
 
 // String translate function
 JSONEditor.defaults.translate = function(key, variables) {
   var lang = JSONEditor.defaults.languages[JSONEditor.defaults.language];
   if(!lang) throw "Unknown language "+JSONEditor.defaults.language;
-  
+
   var string = lang[key] || JSONEditor.defaults.languages[JSONEditor.defaults.default_language][key];
-  
+
   if(typeof string === "undefined") throw "Unknown translate string "+key;
-  
+
   if(variables) {
     for(var i=0; i<variables.length; i++) {
       string = string.replace(new RegExp('\\{\\{'+i+'}}','g'),variables[i]);
     }
   }
-  
+
   return string;
 };
 
@@ -216,7 +221,7 @@ JSONEditor.plugins = {
 
   },
   select2: {
-    
+
   },
   selectize: {
   }

@@ -50,7 +50,7 @@ vFiles = vFiles.concat(a5);
 var a6 = ["src/theme.js","src/themes/bootstrap2.js","src/themes/bootstrap3.js","src/themes/foundation.js","src/themes/html.js","src/themes/jqueryui.js","src/themes/jsoneditor.barebones-theme.js"];
 vFiles = vFiles.concat(a6);
 // (3.2) Icon Libraries and Support of Template Engines
-var a7 = ["src/iconlib.js","src/iconlibs/bootstrap2.js","src/iconlibs/bootstrap3.js","src/iconlibs/fontawesome3.js","src/iconlibs/fontawesome4.js","src/iconlibs/foundation2.js","src/iconlibs/foundation3.js","src/iconlibs/jqueryui.js"];
+var a7 = ["src/iconlib.js","src/iconlibs/icons4menu.js","src/iconlibs/bootstrap2.js","src/iconlibs/bootstrap3.js","src/iconlibs/fontawesome3.js","src/iconlibs/fontawesome4.js","src/iconlibs/foundation2.js","src/iconlibs/foundation3.js","src/iconlibs/jqueryui.js"];
 vFiles = vFiles.concat(a7);
 // (3.3) ".js"  The JS templating engines
 var a8 = ["src/templates/default.js","src/templates/ejs.js","src/templates/handlebars.js","src/templates/hogan.js","src/templates/markup.js","src/templates/mustache.js","src/templates/swig.js","src/templates/underscore.js"];
