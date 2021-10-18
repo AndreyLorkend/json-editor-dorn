@@ -140,7 +140,8 @@ Watchify will trigger the `npm run build` process if files were change due to al
 * [json-editor](https://github.com/mehmetb/json-editor) for hidden element support in the JSON Editor by Mehmet Baker (see [alteration by Mehmet Baker](https://github.com/jdorn/json-editor/pull/749/files)),
 
 
-![JSON Schema -> HTML Editor -> JSON](https://raw.github.com/jdorn/json-editor/master/jsoneditor.png)
+<!-- ![JSON Schema -> HTML Editor -> JSON](https://raw.github.com/jdorn/json-editor/master/jsoneditor.png) -->
+![JSON Schema -> HTML Editor -> JSON](jsoneditor.png)
 
 JSON Editor takes a JSON Schema and uses it to generate an HTML form.  
 It has full support for JSON Schema version 3 and 4 and can integrate with several popular CSS frameworks (bootstrap, foundation, and jQueryUI).
